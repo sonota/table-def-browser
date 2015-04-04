@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Table Def Browser</title>
+    <style>
+
+/******** Base ********/
+
+* {
+  margin: 0;
+  padding: 0;
+  color: #333;
+  box-sizing: border-box;
+}
+
+table {
+  border-collapse: collapse;
+  cell-spacing: 0;
+}
+
+th, td {
+  padding: 0.1rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+th { background: #dee; }
+td { font-family: monospace; }
+
+input {
+  font-family: monospace;
+}
+
+hr {
+  margin: 0.5rem 0;
+  border: solid 1px #ccc;
+  border-width: 1px 0 0 0;
+}
+
+/******** Layout ********/
+
+.l_console {
+  position: fixed; top: 0; padding: 0.2rem; width: 100%;
+}
+
+.l_result {
+  margin: 2.5rem 2%;
+}
+
+/******** Other ********/
+
+body {
+  //margin: 0.1rem 2%;
+}
+
+div#result {
+  min-width: 600px;
+}
+
+table.table {
+  margin-bottom: 0.5rem;
+}
+
+th, td {
+  border: solid 1px #aaa;
+}
+
+tr.table_row_even {
+  background: #fff;
+}
+tr.table_row_odd {
+  background: #eee;
+}
+
+td { word-break: break-all; }
+td.table_name  { width: 100px; vertical-align: top; }
+td.table_pname { width: 100px; vertical-align: top; }
+.table_desc  { vertical-align: top; }
+.col_name    { width: 100px; }
+.col_pname   { width: 100px; }
+
+table.table td.table_name,
+table.table td.table_pname {
+  background: #dee;
+  font-weight: bold;
+}
+
+td.col_size {
+  text-align: right;
+}
+
+table.inner_cols_table {
+  margin: 0.5rem;
+}
+
+span.matched {
+  background: #fe0;
+  color: #000;
+}
+
+input.table_pname { display: none; }
+
+#popup textarea {
+  width: 100%;
+  height: 10rem;
+}
+
+input.btn_sql {
+  margin-top: 0.2rem;
+}
+
+input.w16rem { width: 16rem; }
+input.w12rem { width: 12rem; }
+
+.name_window_inner input[type=text] {
+  border: solid 1px #ddd;
+  margin: 1px; padding: 1px;
+  background: #e8f4f8;
+}
+    </style>
+
+    <script type="text/javascript" src="data_table.js"></script>
+    <script type="text/javascript" src="data_code.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore.js"></script>
+    <script type="text/javascript" src="table_def_browser.js"></script>
+  </head>
+  <body>
+
+<div id="console" class="l_console" style="border: solid 1px #ccc; box-shadow: 0px 0px 10px rgba(0,0,0, 0.3); background: #eee;">
+  table: <input type="text" id="q_table" style="width: 20%;" />
+  col:   <input type="text" id="q_col"   style="width: 20%;" />
+  all:   <input type="text" id="q_all"   style="width: 20%;" />
+  <span id="display_mode">
+  <label><input type="radio" name="display_mode" value="table" checked="checked" />table</label>
+  <label><input type="radio" name="display_mode" value="row" />row</label>
+  </span>
+</div>
+
+<div id="result" class="l_result"></div>
+
+<div style="display: none;">
+<div id="table_template">
+<table class="table">
+  <tr class="table_row">
+    <td class="table_name"><span class="table_name">{name}</span></td>
+    <td class="table_pname">
+      <span class="table_pname">{pname}</span>
+      <input class="table_pname" value="{pname}">
+      <br class="show_insert_sql">
+      <input class="btn_table_window" value="*" type="button">
+    </td>
+    <td rowspan="2" class="table_cols"></td>
+  </tr>
+  <tr>
+    <td class="table_desc" colspan="2">{desc}</td>
+  </tr>
+</table>
+</div>
+</div>
+
+<div id="guard_layer" style="position: fixed; left: 0; top: 0; background: rgba(0,0,0,0.3); width: 100%; height: 100%; display: none;">
+
+  <div id="popup"
+       style="margin: 5%; background: #fff;
+              box-shadow: 0 0 10px rgba(0,0,0, 0.3); padding: 1rem;
+              display: none; border-radius: 0.5rem;
+              overflow: scroll;
+              height: 80%;
+              ">
+    <div style="text-align: right;">
+      <input type="button" class="close" value="x" />
+    </div>
+    <div class="content" style="border-top: solid 1px #ccc; padding: 0.5rem 0;"></div>
+  </div>
+</div>
+
+</body>
+</html>
