@@ -203,33 +203,25 @@ var Table = (function(){
   function makeInnerColsTable(tableData, queryRegExp){
     var cols = tableData.cols;
     var tableEl = createEl(null, "table", { "class": "inner_cols_table" });
-    var headTr = createEl(tableEl, "tr");
-    createEl(headTr, "th", {"class": "col_no"}, null, "#");
-    createEl(headTr, "th", {"class": "col_name"}, null, "論理名");
-    createEl(headTr, "th", {"class": "col_pname"}, null, "物理名");
-    createEl(headTr, "th", null, null, "主キー");
-    createEl(headTr, "th", null, null, "必須");
-    createEl(headTr, "th", null, null, "型");
-    createEl(headTr, "th", null, null, "サイズ");
-    createEl(headTr, "th", null, null, "備考");
 
     var tr;
+    var html = "";
+    html += $("#template_inner_cols_table_header").html();
+    var _render = _.template($("#template_inner_cols_table_row").html());
     _(cols).each(function(col, i){
-      if(i % 2 === 0){
-        tr = createEl(tableEl, "tr", { "class": "table_row_even" });
-      }else{
-        tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
-      }
-
-      createEl(tr, "td", { "class": "col_no"  }, null, col.no);
-      createEl(tr, "td", { "class": "col_name"  }, null, highlight(col.name, queryRegExp));
-      createEl(tr, "td", { "class": "col_pname" }, null, highlight(col.pname, queryRegExp));
-      createEl(tr, "td", null, null, col.pk);
-      createEl(tr, "td", null, null, col.required ? "*" : "");
-      createEl(tr, "td", null, null, col.type);
-      createEl(tr, "td", {"class": "col_size"}, null, col.size);
-      createEl(tr, "td", null, null, text2html(highlight(col.desc || "", queryRegExp)));
+      html += _render({
+        rowClass: "table_row_" + ((i % 2 === 0) ? "even" : "odd"),
+        no: col.no,
+        name: highlight(col.name, queryRegExp),
+        pname: highlight(col.pname, queryRegExp),
+        pk: col.pk,
+        required: col.required ? "*" : "",
+        type: col.type,
+        size: col.size,
+        desc: text2html(highlight(col.desc || "", queryRegExp))
+      });
     });
+    tableEl.innerHTML = html;
 
     return tableEl;
   };
