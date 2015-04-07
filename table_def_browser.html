@@ -204,6 +204,31 @@ input.w12rem { width: 12rem; }
   </tr>
 </script>
 
+<script type="text/template" id="template_cols_table_header">
+    <th class="table_name">テーブル<br />論理名</th>
+    <th class="table_pname">テーブル<br />物理名</th>
+    <th class="col_no">#</th>
+    <th class="col_name">論理名</th>
+    <th class="col_pname">物理名</th>
+    <th>主キー</th>
+    <th>必須</th>
+    <th>型</th>
+    <th>サイズ</th>
+    <th>備考</th>
+</script>
+
+<script type="text/template" id="template_cols_table_row">
+    <td class="table_name"><%= tableName %></td>
+    <td class="table_pname"><%= tablePName %></td>
+    <td class="col_no"><%- no %></td>
+    <td class="col_name"><%= name %></td>
+    <td class="col_pname"><%= pname %></td>
+    <td><%- pk %></td>
+    <td><%- required %></td>
+    <td><%- type %></td>
+    <td class="col_size"><%- size %></td>
+    <td><%= desc %></td>
+</script>
 
 </body>
 </html>

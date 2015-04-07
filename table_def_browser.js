@@ -317,19 +317,12 @@ var Table = (function(){
     var tableEl = createEl(null, "table");
 
     var _tr = createEl(tableEl, "tr");
-    createEl(_tr, "th", {"class": "table_name"}, null, "テーブル<br />論理名");
-    createEl(_tr, "th", {"class": "table_pname"}, null, "テーブル<br />物理名");
-    createEl(_tr, "th", {"class": "col_no"}, null, "#");
-    createEl(_tr, "th", {"class": "col_name"}, null, "論理名");
-    createEl(_tr, "th", {"class": "col_pname"}, null, "物理名");
-    createEl(_tr, "th", null, null, "主キー");
-    createEl(_tr, "th", null, null, "必須");
-    createEl(_tr, "th", null, null, "型");
-    createEl(_tr, "th", null, null, "サイズ");
-    createEl(_tr, "th", null, null, "備考");
 
     // 動いているものをキャンセル
     BulkLoop.clear(blo);
+
+    createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
+    var _render = _.template($("#template_cols_table_row").html());
 
     var tr, table;
     blo = BulkLoop.exec(0, tables.length-1, 5, 10, function(ti){
@@ -358,16 +351,20 @@ var Table = (function(){
         }else{
           _tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
         }
-        createEl(_tr, "td", { "class": "table_name"  }, null, highlight(table.name, re));
-        createEl(_tr, "td", { "class": "table_pname" }, null, highlight(table.pname, re));
-        createEl(_tr, "td", { "class": "col_no"      }, null, col.no);
-        createEl(_tr, "td", { "class": "col_name"    }, null, highlight(col.name, re));
-        createEl(_tr, "td", { "class": "col_pname"   }, null, highlight(col.pname, re));
-        createEl(_tr, "td", null, null, col.pk);
-        createEl(_tr, "td", null, null, col.required ? "*" : "");
-        createEl(_tr, "td", null, null, col.type);
-        createEl(_tr, "td", {"class": "col_size"}, null, col.size);
-        createEl(_tr, "td", null, null, text2html(highlight(col.desc || "", re)));
+
+        var html = _render({
+          tableName: highlight(table.name, re),
+          tablePName: highlight(table.pname, re),
+          no: col.no,
+          name: highlight(col.name, re),
+          pname: highlight(col.pname, re),
+          pk: col.pk,
+          required: col.required ? "*" : "",
+          type: col.type,
+          size: col.size,
+          desc: text2html(highlight(col.desc || "", re))
+        });
+        _tr.innerHTML = html;
       });
     });
     return tableEl;
