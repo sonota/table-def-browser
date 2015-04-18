@@ -61,14 +61,14 @@ function range(from, to){
 
 
 var SEARCH_MODE = {
-  TABLE: "table"
-  ,COLUMN: "col"
-  ,ALL: "all"
+  TABLE: "table",
+  COLUMN: "col",
+  ALL: "all"
 };
 
 var DISPLAY_MODE = {
-  TABLE: "table"
-  ,ROW: "row"
+  TABLE: "table",
+  ROW: "row"
 };
 
 
@@ -121,9 +121,9 @@ var BulkLoop = (function(){
     };
 
     setTimeout(function(){
-      doStep(from, to, step, waitMSec, fn, blo);
-    }
-    , 0 // 初回はすぐに実行
+        doStep(from, to, step, waitMSec, fn, blo);
+      },
+      0 // 初回はすぐに実行
     );
     
     return blo;
@@ -267,7 +267,7 @@ var Table = (function(){
   __.makeUpdateSql = function(tablePName){
     var table = this.data;
     var sql = "update " + table.pname
-        + "\nset " ;
+        + "\nset ";
     sql += _(table.cols).map(function(col){
       if(col.required){
         return col.pname + " = required";
@@ -438,10 +438,10 @@ function generateDummyData(){
     var cols = [];
     range(1, 10).each(function(cn, ci){
       var col = {
-        no: ci + 1
-        ,name: "col_" + cn + "_" + randomStr()
-        ,pname: "p_col_" + cn + "_" + randomStr()
-        ,desc: "desc_" + cn + "_" + randomStr()
+        no: ci + 1,
+        name: "col_" + cn + "_" + randomStr(),
+        pname: "p_col_" + cn + "_" + randomStr(),
+        desc: "desc_" + cn + "_" + randomStr()
       };
       withProbability(0.2, function(){
         col.pk = true;
@@ -453,23 +453,23 @@ function generateDummyData(){
     });
 
     _data.push({
-      name: "table_" + tn + "_" + randomStr()
-      ,pname: "p_table_" + tn + "_" + randomStr()
-      , cols: cols
+      name: "table_" + tn + "_" + randomStr(),
+      pname: "p_table_" + tn + "_" + randomStr(),
+      cols: cols
     });
   });
   
   var manyColTable = {
-    name: "カラムの多いテーブル"
-    ,pname: "many_columns"
-    ,desc: [""]
+    name: "カラムの多いテーブル",
+    pname: "many_columns",
+    desc: [""]
   };
   manyColTable.cols = range(1, 200).map(function(n){
     return {
-      no: n
-      ,name: "lname_" + n
-      ,pname: "pname_" + n
-    }
+      no: n,
+      name: "lname_" + n,
+      pname: "pname_" + n
+    };
   });
   _data.push(manyColTable);
 }
@@ -802,9 +802,9 @@ var TableDefBrowser = (function(){
       $("#q_" + searchMode).val(storage("query"));
 
       var funcmap = {
-        "table": searchTable
-        ,"col": searchColumn
-        ,"all": searchAll
+        "table": searchTable,
+        "col": searchColumn,
+        "all": searchAll
       };
 
       me.searchFunc = funcmap[searchMode];
