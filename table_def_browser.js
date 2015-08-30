@@ -41,6 +41,7 @@ function getData(){
 
   _data = _(data);
   _data.each(function(table, i){
+    table.desc = normalizeText(table.desc);
     _(table.cols).each(function(col, ci){
       col.desc = expandCodeDef(col.desc);
       col.no = ci + 1;
