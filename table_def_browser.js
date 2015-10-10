@@ -110,34 +110,34 @@ function unguard(){
 ////////////////////////////////
 
 
-var BulkLoop = (function(){
+var SliceLoop = (function(){
 
-  function BulkLoop(){}
+  function SliceLoop(){}
   
-  BulkLoop.exec = function(from, to, step, waitMSec, fn){
+  SliceLoop.exec = function(from, to, step, waitMSec, fn){
 
-    // bulk loop object
-    var blo = {
+    // slice loop object
+    var slo = {
       doBreak: false
     };
 
     setTimeout(function(){
-        doStep(from, to, step, waitMSec, fn, blo);
+        doStep(from, to, step, waitMSec, fn, slo);
       },
       0 // 初回はすぐに実行
     );
     
-    return blo;
+    return slo;
   };
 
-  BulkLoop.clear = function(blo){
-    if(blo){
-      blo.doBreak = true;
+  SliceLoop.clear = function(slo){
+    if(slo){
+      slo.doBreak = true;
     }
   };
 
-  function doStep(from, to, step, waitMSec, fn, blo){
-    if(blo.doBreak){ return; }
+  function doStep(from, to, step, waitMSec, fn, slo){
+    if(slo.doBreak){ return; }
 
     var tempTo = Math.min(from + step - 1, to);
 
@@ -149,11 +149,11 @@ var BulkLoop = (function(){
     }
 
     setTimeout(function(){
-      doStep(from + step, to, step, waitMSec, fn, blo);
+      doStep(from + step, to, step, waitMSec, fn, slo);
     }, waitMSec);
   }
 
-  return BulkLoop;
+  return SliceLoop;
 })();
 
 
@@ -162,8 +162,8 @@ var BulkLoop = (function(){
 
 var Table = (function(){
 
-  // bulk loop object
-  var blo;
+  // slice loop object
+  var slo;
 
   function text2html(s){
     return s.replace(/\n/g, "<br />");
@@ -293,11 +293,11 @@ var Table = (function(){
     var re = new RegExp(query, "i");
 
     // 動いているものをキャンセル
-    BulkLoop.clear(blo);
+    SliceLoop.clear(slo);
 
     var _row, table;
     var template = $("#table_template").html();
-    blo = BulkLoop.exec(0, _tables.length-1, 1, 10, function(ti){
+    slo = SliceLoop.exec(0, _tables.length-1, 1, 10, function(ti){
       var $tableEl = $(template);
       table = _tables[ti];
       $tableEl.find("span.table_name").html(highlight(table.name, re));
@@ -320,13 +320,13 @@ var Table = (function(){
     var _tr = createEl(tableEl, "tr");
 
     // 動いているものをキャンセル
-    BulkLoop.clear(blo);
+    SliceLoop.clear(slo);
 
     createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
     var _render = _.template($("#template_cols_table_row").html());
 
     var tr, table;
-    blo = BulkLoop.exec(0, tables.length-1, 5, 10, function(ti){
+    slo = SliceLoop.exec(0, tables.length-1, 5, 10, function(ti){
       table = tables[ti];
       _(table.cols).each(function(col){
 
