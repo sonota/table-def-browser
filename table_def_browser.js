@@ -23,7 +23,7 @@ function getCodeDef(key){
 }
 
 function expandCodeDef(desc){
-  var _desc = normalizeText(desc);
+  const _desc = normalizeText(desc);
 
   return _(_desc.split("\n")).map(line =>{
     if( line.match( /^{code:(.+)}$/ ) ){
@@ -61,13 +61,13 @@ function range(from, to){
 ////////////////////////////////
 
 
-var SEARCH_MODE = {
+const SEARCH_MODE = {
   TABLE: "table",
   COLUMN: "col",
   ALL: "all"
 };
 
-var DISPLAY_MODE = {
+const DISPLAY_MODE = {
   TABLE: "table",
   ROW: "row"
 };
@@ -77,7 +77,7 @@ var DISPLAY_MODE = {
 // Utils
 
 function createEl(parent, tagName, attrs, styles, innerHTML){
-  var el = document.createElement(tagName);
+  const el = document.createElement(tagName);
 
   if(attrs){
     for(var key in attrs){
@@ -115,7 +115,7 @@ class SliceLoop {
   static exec(from, to, step, waitMSec, fn){
 
     // slice loop object
-    var slo = {
+    const slo = {
       doBreak: false
     };
 
@@ -137,7 +137,7 @@ class SliceLoop {
   static doStep(from, to, step, waitMSec, fn, slo){
     if(slo.doBreak){ return; }
 
-    var tempTo = Math.min(from + step - 1, to);
+    const tempTo = Math.min(from + step - 1, to);
 
     for(var i=from; i<=tempTo; i++){
       fn(i);
@@ -193,13 +193,13 @@ class Table {
   }
 
   static _makeInnerColsTable(tableData, queryRegExp){
-    var cols = tableData.cols;
-    var tableEl = createEl(null, "table", { "class": "inner_cols_table" });
+    const cols = tableData.cols;
+    const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
     var tr;
     var html = "";
     html += $("#template_inner_cols_table_header").html();
-    var _render = _.template($("#template_inner_cols_table_row").html());
+    const _render = _.template($("#template_inner_cols_table_row").html());
     _(cols).each((col, i)=>{
       html += _render({
         rowClass: "table_row_" + ((i % 2 === 0) ? "even" : "odd"),
@@ -225,19 +225,19 @@ class Table {
   }
 
   static _fromPName(pname){
-    var tableData = this._getDataByPName(pname);
+    const tableData = this._getDataByPName(pname);
     return new Table(tableData);
   }
 
 
   static fromTR(tr){
-    var pname = $(tr).find("input.table_pname").val();
+    const pname = $(tr).find("input.table_pname").val();
     return this._fromPName(pname);
   }
 
 
   makeInsertSql(tablePName){
-    var table = this.data;
+    const table = this.data;
     var sql = "insert into " + table.pname + " ( ";
     sql += _(table.cols).map(col =>{
       return col.pname;
@@ -257,7 +257,7 @@ class Table {
   }
 
   makeUpdateSql(tablePName){
-    var table = this.data;
+    const table = this.data;
     var sql = "update " + table.pname
         + "\nset ";
     sql += _(table.cols).map(col =>{
@@ -271,7 +271,7 @@ class Table {
     sql += _(table.cols).filter(col =>{
       return col.pk;
     }).map(col =>{
-      var s =  "  and " + col.pname + " = ";
+      const s =  "  and " + col.pname + " = ";
       return s;
     }).join(", ");
     sql += "\n;";
@@ -279,9 +279,9 @@ class Table {
   }
 
   static makeTablesTable(_tables, query){
-    var $outer = $(createEl(null, "div"));
+    const $outer = $(createEl(null, "div"));
 
-    var re = new RegExp(query, "i");
+    const re = new RegExp(query, "i");
 
     // 動いているものをキャンセル
     SliceLoop.clear(this.slo);
@@ -304,9 +304,9 @@ class Table {
   }
 
   static makeColsTable(tables, query, searchMode){
-    var re = new RegExp(query, "i");
+    const re = new RegExp(query, "i");
 
-    var tableEl = createEl(null, "table");
+    const tableEl = createEl(null, "table");
 
     var _tr = createEl(tableEl, "tr");
 
@@ -314,7 +314,7 @@ class Table {
     SliceLoop.clear(this.slo);
 
     createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
-    var _render = _.template($("#template_cols_table_row").html());
+    const _render = _.template($("#template_cols_table_row").html());
 
     var tr, table;
     this.slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
@@ -331,7 +331,7 @@ class Table {
           searchTarget = [table.name, table.pname, col.name, col.pname, col.desc];
         }
 
-        var matched = _(searchTarget).filter(it =>{
+        const matched = _(searchTarget).filter(it =>{
           return it && it.match(re);
         });
         if(matched.length === 0){
@@ -344,7 +344,7 @@ class Table {
           _tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
         }
 
-        var html = _render({
+        const html = _render({
           tableName: this._highlight(table.name, re),
           tablePName: this._highlight(table.pname, re),
           no: col.no,
@@ -378,7 +378,7 @@ class Popup {
   }
 
   show(){
-    var me = this;
+    const me = this;
     guard();
     me.$el.show();
     me.$el.find(".close").on("click", ()=>{
@@ -392,7 +392,7 @@ class Popup {
   }
 
   setContent(el){
-    var $content = this.$el.find(".content");
+    const $content = this.$el.find(".content");
     $content.empty();
     $content.append(el);
   }
@@ -407,7 +407,7 @@ class Popup {
 function generateDummyData(){
 
   function randomStr(){
-    var len = Math.random() * 10;
+    const len = Math.random() * 10;
     var s = "";
     range(0, len).each(()=>{
       var n = parseInt(97 + Math.random() * 23, 10);
@@ -422,11 +422,11 @@ function generateDummyData(){
     }
   }
 
-  var _data = getData();
+  const _data = getData();
   range(1, 500).each(tn =>{
-    var cols = [];
+    const cols = [];
     range(1, 10).each((cn, ci)=>{
-      var col = {
+      const col = {
         no: ci + 1,
         name: "col_" + cn + "_" + randomStr(),
         pname: "p_col_" + cn + "_" + randomStr(),
@@ -448,7 +448,7 @@ function generateDummyData(){
     });
   });
   
-  var manyColTable = {
+  const manyColTable = {
     name: "カラムの多いテーブル",
     pname: "many_columns",
     desc: "table desc"
@@ -470,7 +470,7 @@ function generateDummyData(){
 class TableDefBrowser {
 
   static _storage(){
-    var k = arguments[0], v = arguments[1];
+    const k = arguments[0], v = arguments[1];
     if(arguments.length >= 2){
       localStorage.setItem(k, v);
       return null;
@@ -482,7 +482,7 @@ class TableDefBrowser {
   ////////////////////////////////
 
   constructor(){
-    var me = this;
+    const me = this;
     me.$el = $(document.body);
     me.popup = new Popup($("#popup"));
     me.searchFunc = null;
@@ -508,7 +508,7 @@ class TableDefBrowser {
   }
 
   static _table2text(table){
-    var s = [];
+    const s = [];
     s.push(table.name);
     s.push(table.pname);
     _(table.cols).each(col =>{
@@ -536,8 +536,8 @@ class TableDefBrowser {
       this._clearResult();
       return;
     }
-    var re = new RegExp(query, "i");
-    var matched = getData().filter(table =>{
+    const re = new RegExp(query, "i");
+    const matched = getData().filter(table =>{
       return table.name.match(re) || table.pname.match(re);
     });
     this._storage("query", query);
@@ -549,9 +549,9 @@ class TableDefBrowser {
       this._clearResult();
       return;
     }
-    var re = new RegExp(query, "i");
-    var matched = getData().filter(table =>{
-      var found = _(table.cols).filter((col, ci)=>{
+    const re = new RegExp(query, "i");
+    const matched = getData().filter(table =>{
+      const found = _(table.cols).filter((col, ci)=>{
         return col.name.match(re) !== null
            || col.pname.match(re) !== null;
       });
@@ -568,8 +568,8 @@ class TableDefBrowser {
       this._clearResult();
       return;
     }
-    var re = new RegExp(query, "i");
-    var matched = getData().filter(table =>{
+    const re = new RegExp(query, "i");
+    const matched = getData().filter(table =>{
       return this._table2text(table).match(re);
     });
     this._storage("query", query);
@@ -579,7 +579,7 @@ class TableDefBrowser {
   ////////////////////////////////
 
   changeDisplayMode(mode){
-    var me = this;
+    const me = this;
     const ctor = this.constructor;
 
     // puts("changeDisplayMode " + mode);
@@ -597,13 +597,13 @@ class TableDefBrowser {
   }
 
   switchDisplayMode(){
-    var $notChecked = $("[name=display_mode]").not(":checked");
+    const $notChecked = $("[name=display_mode]").not(":checked");
     this.displayMode = $notChecked.val();
     this.changeDisplayMode(this.displayMode);
   }
 
   idleTimeout(timerName, delay, func){
-    var me = this;
+    const me = this;
 
     if(me.timers[timerName] !== null){
       // puts("cancel timeout");
@@ -617,10 +617,10 @@ class TableDefBrowser {
   }
 
   showTableWindow(table){
-    var me = this;
+    const me = this;
     me.popup.show();
 
-    var $body = $("<div></div>")
+    const $body = $("<div></div>")
         .addClass("name_window_inner")
         .on("click", (ev)=>{
           if(ev.target.nodeName === "INPUT"){
@@ -642,7 +642,7 @@ class TableDefBrowser {
     $body.append("<hr />");
 
     function addInput(val){
-      var $el = $("<input />").attr({type: "text"}).val(val);
+      const $el = $("<input />").attr({type: "text"}).val(val);
       $body.append($el);
       return $el;
     }
@@ -681,7 +681,7 @@ class TableDefBrowser {
 
   init(options){
     options = options || {};
-    var me = this;
+    const me = this;
     const ctor = this.constructor;
 
     // for debug
@@ -730,7 +730,7 @@ class TableDefBrowser {
         return;
       }
 
-      var table = Table.fromTR($(ev.target).closest("tr"));
+      const table = Table.fromTR($(ev.target).closest("tr"));
 
       me.showTableWindow(table);
     });
@@ -772,7 +772,7 @@ class TableDefBrowser {
 
     // restore cond and display
     (()=>{
-      var searchMode = ctor._storage("search_mode");
+      const searchMode = ctor._storage("search_mode");
       if( ! searchMode){
         searchMode = SEARCH_MODE.TABLE;
       }
@@ -787,7 +787,7 @@ class TableDefBrowser {
       me.query = ctor._storage("query");
       $("#q_" + searchMode).val(ctor._storage("query"));
 
-      var funcmap = {
+      const funcmap = {
         "table": ctor._searchTable.bind(ctor),
         "col": ctor._searchColumn.bind(ctor),
         "all": ctor._searchAll.bind(ctor)
@@ -807,7 +807,7 @@ TableDefBrowser.queryMinLength = 1;
 
 
 $(function(){
-  var tdb = new TableDefBrowser();
+  const tdb = new TableDefBrowser();
   tdb.init({
     debug: /\?debug=1$/.test(location.href)
   });
