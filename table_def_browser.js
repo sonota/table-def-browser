@@ -467,9 +467,9 @@ function generateDummyData(){
 ////////////////////////////////
 
 
-var TableDefBrowser = (()=>{
+class TableDefBrowser {
 
-  function storage(){
+  static _storage(){
     var k = arguments[0], v = arguments[1];
     if(arguments.length >= 2){
       localStorage.setItem(k, v);
@@ -481,7 +481,7 @@ var TableDefBrowser = (()=>{
 
   ////////////////////////////////
 
-  function TableDefBrowser(){
+  constructor(){
     var me = this;
     me.$el = $(document.body);
     me.popup = new Popup($("#popup"));
@@ -491,27 +491,23 @@ var TableDefBrowser = (()=>{
     me.timers = { search: null };
   }
 
-  var __ = TableDefBrowser.prototype;
-
-  TableDefBrowser.idleTime = 200; // msec
-
   ////////////////////////////////
 
-  function clearResult(){
+  static _clearResult(){
     $("#result").empty();
   }
 
-  function showTables(tables, query){
-    clearResult();
+  static _showTables(tables, query){
+    this._clearResult();
     $("#result").append(Table.makeTablesTable(tables, query));
   }
 
-  function showRows(tables, query, searchMode){
-    clearResult();
+  static _showRows(tables, query, searchMode){
+    this._clearResult();
     $("#result").append(Table.makeColsTable(tables, query, searchMode));
   }
 
-  function table2text(table){
+  static _table2text(table){
     var s = [];
     s.push(table.name);
     s.push(table.pname);
@@ -523,11 +519,11 @@ var TableDefBrowser = (()=>{
     return s.toString();
   }
 
-  function showResult(tables, query, searchMode, displayMode){
+  static _showResult(tables, query, searchMode, displayMode){
     if(displayMode === DISPLAY_MODE.TABLE){
-      showTables(tables, query);
+      this._showTables(tables, query);
     }else if(displayMode === DISPLAY_MODE.ROW){
-      showRows(tables, query, searchMode);
+      this._showRows(tables, query, searchMode);
     }else{
       throw new Error("unknown display mode (" + displayMode + ")");
     }
@@ -535,23 +531,22 @@ var TableDefBrowser = (()=>{
 
   ////////////////////////////////
 
-  var queryMinLength = 1;
-  function searchTable(query, displayMode){
-    if(query.length < queryMinLength ){
-      clearResult();
+  static _searchTable(query, displayMode){
+    if(query.length < this.queryMinLength ){
+      this._clearResult();
       return;
     }
     var re = new RegExp(query, "i");
     var matched = getData().filter(table =>{
       return table.name.match(re) || table.pname.match(re);
     });
-    storage("query", query);
-    showResult(matched, query, SEARCH_MODE.TABLE, displayMode);
+    this._storage("query", query);
+    this._showResult(matched, query, SEARCH_MODE.TABLE, displayMode);
   }
 
-  function searchColumn(query, displayMode){
-    if(query.length < queryMinLength ){
-      clearResult();
+  static _searchColumn(query, displayMode){
+    if(query.length < this.queryMinLength ){
+      this._clearResult();
       return;
     }
     var re = new RegExp(query, "i");
@@ -562,29 +557,30 @@ var TableDefBrowser = (()=>{
       });
       return found.length > 0;
     });
-    storage("query", query);
-    showResult(matched, query, SEARCH_MODE.COLUMN, displayMode);
+    this._storage("query", query);
+    this._showResult(matched, query, SEARCH_MODE.COLUMN, displayMode);
   }
 
-  function searchAll(query, displayMode){
-    storage("search_mode", SEARCH_MODE.ALL);
+  static _searchAll(query, displayMode){
+    this._storage("search_mode", SEARCH_MODE.ALL);
 
-    if(query.length < queryMinLength ){
-      clearResult();
+    if(query.length < this.queryMinLength ){
+      this._clearResult();
       return;
     }
     var re = new RegExp(query, "i");
     var matched = getData().filter(table =>{
-      return table2text(table).match(re);
+      return this._table2text(table).match(re);
     });
-    storage("query", query);
-    showResult(matched, query, SEARCH_MODE.ALL, displayMode);
+    this._storage("query", query);
+    this._showResult(matched, query, SEARCH_MODE.ALL, displayMode);
   }
 
   ////////////////////////////////
 
-  __.changeDisplayMode = (mode)=>{
+  changeDisplayMode(mode){
     var me = this;
+    const ctor = this.constructor;
 
     // puts("changeDisplayMode " + mode);
     me.displayMode = mode;
@@ -597,16 +593,16 @@ var TableDefBrowser = (()=>{
         $it.prop("checked", false);
       }
     });
-    storage("display_mode", me.displayMode);
-  };
+    ctor._storage("display_mode", me.displayMode);
+  }
 
-  __.switchDisplayMode = ()=>{
+  switchDisplayMode(){
     var $notChecked = $("[name=display_mode]").not(":checked");
     this.displayMode = $notChecked.val();
     this.changeDisplayMode(this.displayMode);
-  };
+  }
 
-  __.idleTimeout = function(timerName, delay, func){
+  idleTimeout(timerName, delay, func){
     var me = this;
 
     if(me.timers[timerName] !== null){
@@ -618,9 +614,9 @@ var TableDefBrowser = (()=>{
       func();
       me.timers[timerName] = null;
     }, delay);
-  };
+  }
 
-  __.showTableWindow = (table)=>{
+  showTableWindow(table){
     var me = this;
     me.popup.show();
 
@@ -681,11 +677,12 @@ var TableDefBrowser = (()=>{
       }
       me.popup.hide();
     });
-  };
+  }
 
-  __.init = function(options){
+  init(options){
     options = options || {};
     var me = this;
+    const ctor = this.constructor;
 
     // for debug
     if(options.debug){
@@ -701,23 +698,23 @@ var TableDefBrowser = (()=>{
         });
       });
     }
-    onQueryInput(me, "#q_table", searchTable);
-    onQueryInput(me, "#q_col", searchColumn);
-    onQueryInput(me, "#q_all", searchAll);
+    onQueryInput(me, "#q_table", ctor._searchTable.bind(ctor));
+    onQueryInput(me, "#q_col", ctor._searchColumn.bind(ctor));
+    onQueryInput(me, "#q_all", ctor._searchAll.bind(ctor));
 
     $("#q_table").on("focus", (ev)=>{
-      storage("search_mode", SEARCH_MODE.TABLE);
+      ctor._storage("search_mode", SEARCH_MODE.TABLE);
     });
     $("#q_col").on("focus", (ev)=>{
-      storage("search_mode", SEARCH_MODE.COLUMN);
+      ctor._storage("search_mode", SEARCH_MODE.COLUMN);
     });
     $("#q_all").on("focus", (ev)=>{
-      storage("search_mode", SEARCH_MODE.ALL);
+      ctor._storage("search_mode", SEARCH_MODE.ALL);
     });
 
     $("#display_mode").on("change", (ev)=>{
       me.displayMode = ev.target.value;
-      storage("display_mode", me.displayMode);
+      ctor._storage("display_mode", me.displayMode);
       me.searchFunc(me.query, me.displayMode);
     });
 
@@ -775,34 +772,35 @@ var TableDefBrowser = (()=>{
 
     // restore cond and display
     (()=>{
-      var searchMode = storage("search_mode");
+      var searchMode = ctor._storage("search_mode");
       if( ! searchMode){
         searchMode = SEARCH_MODE.TABLE;
       }
       $("#q_" + searchMode).focus();
 
-      me.displayMode = storage("display_mode");
+      me.displayMode = ctor._storage("display_mode");
       if( ! me.displayMode){
         me.displayMode = DISPLAY_MODE.TABLE;
       }
       me.changeDisplayMode(me.displayMode);
 
-      me.query = storage("query");
-      $("#q_" + searchMode).val(storage("query"));
+      me.query = ctor._storage("query");
+      $("#q_" + searchMode).val(ctor._storage("query"));
 
       var funcmap = {
-        "table": searchTable,
-        "col": searchColumn,
-        "all": searchAll
+        "table": ctor._searchTable.bind(ctor),
+        "col": ctor._searchColumn.bind(ctor),
+        "all": ctor._searchAll.bind(ctor)
       };
 
-      me.searchFunc = funcmap[searchMode];
-      me.searchFunc(me.query, me.displayMode);
+      this.searchFunc = funcmap[searchMode];
+      this.searchFunc(me.query, me.displayMode);
     })();
-  };
+  }
+}
 
-  return TableDefBrowser;
-})();
+TableDefBrowser.idleTime = 200; // msec
+TableDefBrowser.queryMinLength = 1;
 
 
 ////////////////////////////////
