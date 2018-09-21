@@ -110,11 +110,9 @@ function unguard(){
 ////////////////////////////////
 
 
-var SliceLoop = (function(){
+class SliceLoop {
 
-  function SliceLoop(){}
-  
-  SliceLoop.exec = function(from, to, step, waitMSec, fn){
+  static exec(from, to, step, waitMSec, fn){
 
     // slice loop object
     var slo = {
@@ -122,21 +120,21 @@ var SliceLoop = (function(){
     };
 
     setTimeout(function(){
-        doStep(from, to, step, waitMSec, fn, slo);
+        SliceLoop.doStep(from, to, step, waitMSec, fn, slo);
       },
       0 // 初回はすぐに実行
     );
     
     return slo;
-  };
+  }
 
-  SliceLoop.clear = function(slo){
+  static clear(slo){
     if(slo){
       slo.doBreak = true;
     }
-  };
+  }
 
-  function doStep(from, to, step, waitMSec, fn, slo){
+  static doStep(from, to, step, waitMSec, fn, slo){
     if(slo.doBreak){ return; }
 
     var tempTo = Math.min(from + step - 1, to);
@@ -149,12 +147,10 @@ var SliceLoop = (function(){
     }
 
     setTimeout(function(){
-      doStep(from + step, to, step, waitMSec, fn, slo);
+      SliceLoop.doStep(from + step, to, step, waitMSec, fn, slo);
     }, waitMSec);
   }
-
-  return SliceLoop;
-})();
+}
 
 
 ////////////////////////////////
