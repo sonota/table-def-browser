@@ -819,6 +819,6 @@ var TableDefBrowser = (function(){
 $(function(){
   var tdb = new TableDefBrowser();
   tdb.init({
-    debug: false
+    debug: /\?debug=1$/.test(location.href)
   });
 });
