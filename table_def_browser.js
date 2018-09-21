@@ -370,37 +370,33 @@ Table.slo = null;
 ////////////////////////////////
 
 
-var Popup = (()=>{
+class Popup {
 
-  function Popup($el){
+  constructor($el){
     this.$el = $el;
     this.content = null;
   }
 
-  var __ = Popup.prototype;
-
-  __.show = ()=>{
+  show(){
     var me = this;
     guard();
     me.$el.show();
     me.$el.find(".close").on("click", ()=>{
       me.hide();
     });
-  };
+  }
 
-  __.hide = ()=>{
+  hide(){
     unguard();
     this.$el.hide();
-  };
+  }
 
-  __.setContent = (el)=>{
+  setContent(el){
     var $content = this.$el.find(".content");
     $content.empty();
     $content.append(el);
-  };
-
-  return Popup;
-})();
+  }
+}
 
 
 ////////////////////////////////
