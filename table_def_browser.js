@@ -459,7 +459,7 @@ function generateDummyData(){
   var manyColTable = {
     name: "カラムの多いテーブル",
     pname: "many_columns",
-    desc: [""]
+    desc: "table desc"
   };
   manyColTable.cols = range(1, 200).map(function(n){
     return {
