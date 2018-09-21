@@ -156,20 +156,17 @@ class SliceLoop {
 ////////////////////////////////
 
 
-var Table = (()=>{
+class Table {
 
-  // slice loop object
-  var slo;
-
-  function text2html(s){
+  static _text2html(s){
     return s.replace(/\n/g, "<br />");
   }
 
-  function em(s){
+  static _em(s){
     return '<span class="matched">' + s + '</span>';
   }
 
-  function highlight(text, queryRegExp){
+  static _highlight(text, queryRegExp){
     var result = "";
 
     while(true){
@@ -182,7 +179,7 @@ var Table = (()=>{
         break;
       }
       result += RegExp.leftContext;
-      result += em(RegExp.lastMatch);
+      result += this._em(RegExp.lastMatch);
       text = RegExp.rightContext;
     }
 
@@ -191,13 +188,11 @@ var Table = (()=>{
 
   ////////////////////////////////
 
-  function Table(data){
+  constructor(data){
     this.data = data;
   }
 
-  var __ = Table.prototype;
-
-  function makeInnerColsTable(tableData, queryRegExp){
+  static _makeInnerColsTable(tableData, queryRegExp){
     var cols = tableData.cols;
     var tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
@@ -209,39 +204,39 @@ var Table = (()=>{
       html += _render({
         rowClass: "table_row_" + ((i % 2 === 0) ? "even" : "odd"),
         no: col.no,
-        name: highlight(col.name, queryRegExp),
-        pname: highlight(col.pname, queryRegExp),
+        name: this._highlight(col.name, queryRegExp),
+        pname: this._highlight(col.pname, queryRegExp),
         pk: col.pk,
         required: col.required ? "*" : "",
         type: col.type,
         size: col.size,
-        desc: text2html(highlight(col.desc || "", queryRegExp))
+        desc: this._text2html(this._highlight(col.desc || "", queryRegExp))
       });
     });
     tableEl.innerHTML = html;
 
     return tableEl;
-  };
+  }
 
-  function getDataByPName(pname){
+  static _getDataByPName(pname){
     return getData().find(it =>{
       return it.pname === pname;
     });
-  };
+  }
 
-  function fromPName(pname){
-    var tableData = getDataByPName(pname);
+  static _fromPName(pname){
+    var tableData = this._getDataByPName(pname);
     return new Table(tableData);
-  };
+  }
 
 
-  Table.fromTR = (tr)=>{
+  static fromTR(tr){
     var pname = $(tr).find("input.table_pname").val();
-    return fromPName(pname);
-  };
+    return this._fromPName(pname);
+  }
 
 
-  __.makeInsertSql = (tablePName)=>{
+  makeInsertSql(tablePName){
     var table = this.data;
     var sql = "insert into " + table.pname + " ( ";
     sql += _(table.cols).map(col =>{
@@ -259,9 +254,9 @@ var Table = (()=>{
     }).join(", ");
     sql += " );";
     return sql;
-  };
+  }
 
-  __.makeUpdateSql = (tablePName)=>{
+  makeUpdateSql(tablePName){
     var table = this.data;
     var sql = "update " + table.pname
         + "\nset ";
@@ -281,34 +276,34 @@ var Table = (()=>{
     }).join(", ");
     sql += "\n;";
     return sql;
-  };
+  }
 
-  Table.makeTablesTable = (_tables, query)=>{
+  static makeTablesTable(_tables, query){
     var $outer = $(createEl(null, "div"));
 
     var re = new RegExp(query, "i");
 
     // 動いているものをキャンセル
-    SliceLoop.clear(slo);
+    SliceLoop.clear(this.slo);
 
     var _row, table;
     var template = $("#table_template").html();
-    slo = SliceLoop.exec(0, _tables.length-1, 1, 10, (ti)=>{
+    this.slo = SliceLoop.exec(0, _tables.length-1, 1, 10, (ti)=>{
       var $tableEl = $(template);
       table = _tables[ti];
-      $tableEl.find("span.table_name").html(highlight(table.name, re));
-      $tableEl.find("span.table_pname").html(highlight(table.pname, re));
+      $tableEl.find("span.table_name").html(this._highlight(table.name, re));
+      $tableEl.find("span.table_pname").html(this._highlight(table.pname, re));
       $tableEl.find("input.table_pname").val(table.pname);
-      $tableEl.find(".table_desc").html(highlight(table.desc || "", re));
-      $tableEl.find(".table_cols").append(makeInnerColsTable(table, re));
+      $tableEl.find(".table_desc").html(this._highlight(table.desc || "", re));
+      $tableEl.find(".table_cols").append(this._makeInnerColsTable(table, re));
 
       $outer.append($tableEl);
     });
 
     return $outer.get(0);
-  };
+  }
 
-  Table.makeColsTable = (tables, query, searchMode)=>{
+  static makeColsTable(tables, query, searchMode){
     var re = new RegExp(query, "i");
 
     var tableEl = createEl(null, "table");
@@ -316,13 +311,13 @@ var Table = (()=>{
     var _tr = createEl(tableEl, "tr");
 
     // 動いているものをキャンセル
-    SliceLoop.clear(slo);
+    SliceLoop.clear(this.slo);
 
     createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
     var _render = _.template($("#template_cols_table_row").html());
 
     var tr, table;
-    slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
+    this.slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
       table = tables[ti];
       _(table.cols).each(col =>{
 
@@ -350,25 +345,26 @@ var Table = (()=>{
         }
 
         var html = _render({
-          tableName: highlight(table.name, re),
-          tablePName: highlight(table.pname, re),
+          tableName: this._highlight(table.name, re),
+          tablePName: this._highlight(table.pname, re),
           no: col.no,
-          name: highlight(col.name, re),
-          pname: highlight(col.pname, re),
+          name: this._highlight(col.name, re),
+          pname: this._highlight(col.pname, re),
           pk: col.pk,
           required: col.required ? "*" : "",
           type: col.type,
           size: col.size,
-          desc: text2html(highlight(col.desc || "", re))
+          desc: this._text2html(this._highlight(col.desc || "", re))
         });
         _tr.innerHTML = html;
       });
     });
     return tableEl;
-  };
+  }
+}
 
-  return Table;
-})();
+// slice loop object
+Table.slo = null;
 
 
 ////////////////////////////////
