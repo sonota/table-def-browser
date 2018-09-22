@@ -42,7 +42,7 @@ function getData(){
   _data = _(data);
   _data.each((table, i)=>{
     table.desc = normalizeText(table.desc);
-    _(table.cols).each((col, ci)=>{
+    table.cols.forEach((col, ci)=>{
       col.desc = expandCodeDef(col.desc);
       col.no = ci + 1;
     });
@@ -200,7 +200,7 @@ class Table {
     let html = "";
     html += $("#template_inner_cols_table_header").html();
     const _render = _.template($("#template_inner_cols_table_row").html());
-    _(cols).each((col, i)=>{
+    cols.forEach((col, i)=>{
       html += _render({
         rowClass: "table_row_" + ((i % 2 === 0) ? "even" : "odd"),
         no: col.no,
@@ -319,7 +319,7 @@ class Table {
     var tr, table;
     this.slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
       table = tables[ti];
-      _(table.cols).each(col =>{
+      table.cols.forEach(col =>{
 
         let searchTarget = [];
 
@@ -511,7 +511,7 @@ class TableDefBrowser {
     const s = [];
     s.push(table.name);
     s.push(table.pname);
-    _(table.cols).each(col =>{
+    table.cols.forEach(col =>{
       s.push(col.name);
       s.push(col.pname);
       s.push(col.desc);
@@ -659,7 +659,7 @@ class TableDefBrowser {
 
     $body.append("<hr />");
 
-    _(table.data.cols).each(col =>{
+    table.data.cols.forEach(col =>{
       addInput(col.name);
       addInput(col.pname);
       addInput(table.data.name + "." + col.name).addClass("w12rem");
