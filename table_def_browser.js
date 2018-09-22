@@ -39,8 +39,8 @@ function getData(){
     return _data;
   }
 
-  _data = _(data);
-  _data.each((table, i)=>{
+  _data = data;
+  _data.forEach((table, i)=>{
     table.desc = normalizeText(table.desc);
     table.cols.forEach((col, ci)=>{
       col.desc = expandCodeDef(col.desc);
@@ -331,7 +331,7 @@ class Table {
           searchTarget = [table.name, table.pname, col.name, col.pname, col.desc];
         }
 
-        const matched = _(searchTarget).filter(it =>{
+        const matched = searchTarget.filter(it =>{
           return it && it.match(re);
         });
         if(matched.length === 0){
