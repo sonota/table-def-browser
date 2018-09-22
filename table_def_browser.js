@@ -80,12 +80,12 @@ function createEl(parent, tagName, attrs, styles, innerHTML){
   const el = document.createElement(tagName);
 
   if(attrs){
-    for(let key in attrs){
+    for(let key of Object.keys(attrs)){
       el.setAttribute(key, attrs[key]);
     }
   }
   if(styles){
-    for(let key in styles){
+    for(let key of Object.keys(styles)){
       el.style[key] = styles[key];
     }
   }
