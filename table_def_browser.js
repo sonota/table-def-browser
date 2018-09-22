@@ -50,8 +50,8 @@ function getData(){
   return _data;
 }
 
-function puts(){
-  console.log.apply(console, arguments);
+function puts(...args){
+  console.log.apply(console, args);
 }
 
 function range(from, to){
@@ -469,9 +469,9 @@ function generateDummyData(){
 
 class TableDefBrowser {
 
-  static _storage(){
-    const k = arguments[0], v = arguments[1];
-    if(arguments.length >= 2){
+  static _storage(...args){
+    const k = args[0], v = args[1];
+    if(args.length >= 2){
       localStorage.setItem(k, v);
       return null;
     }else{
