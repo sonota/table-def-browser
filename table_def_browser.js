@@ -2,7 +2,7 @@
  * pname: physical name
  */
 
-var _data;
+let _data;
 
 /**
  * @param [String or Array] val
@@ -23,9 +23,9 @@ function getCodeDef(key){
 }
 
 function expandCodeDef(desc){
-  var _desc = normalizeText(desc);
+  const _desc = normalizeText(desc);
 
-  return _(_desc.split("\n")).map(function(line){
+  return _desc.split("\n").map(line =>{
     if( line.match( /^{code:(.+)}$/ ) ){
       return getCodeDef(RegExp.$1);
     }else{
@@ -39,10 +39,10 @@ function getData(){
     return _data;
   }
 
-  _data = _(data);
-  _data.each(function(table, i){
+  _data = data;
+  _data.forEach((table, i)=>{
     table.desc = normalizeText(table.desc);
-    _(table.cols).each(function(col, ci){
+    table.cols.forEach((col, ci)=>{
       col.desc = expandCodeDef(col.desc);
       col.no = ci + 1;
     });
@@ -50,8 +50,8 @@ function getData(){
   return _data;
 }
 
-function puts(){
-  console.log.apply(console, arguments);
+function puts(...args){
+  console.log.apply(console, args);
 }
 
 function range(from, to){
@@ -61,13 +61,13 @@ function range(from, to){
 ////////////////////////////////
 
 
-var SEARCH_MODE = {
+const SEARCH_MODE = {
   TABLE: "table",
   COLUMN: "col",
   ALL: "all"
 };
 
-var DISPLAY_MODE = {
+const DISPLAY_MODE = {
   TABLE: "table",
   ROW: "row"
 };
@@ -77,15 +77,15 @@ var DISPLAY_MODE = {
 // Utils
 
 function createEl(parent, tagName, attrs, styles, innerHTML){
-  var el = document.createElement(tagName);
+  const el = document.createElement(tagName);
 
   if(attrs){
-    for(var key in attrs){
+    for(let key of Object.keys(attrs)){
       el.setAttribute(key, attrs[key]);
     }
   }
   if(styles){
-    for(var key in styles){
+    for(let key of Object.keys(styles)){
       el.style[key] = styles[key];
     }
   }
@@ -110,71 +110,64 @@ function unguard(){
 ////////////////////////////////
 
 
-var SliceLoop = (function(){
+class SliceLoop {
 
-  function SliceLoop(){}
-  
-  SliceLoop.exec = function(from, to, step, waitMSec, fn){
+  static exec(from, to, step, waitMSec, fn){
 
     // slice loop object
-    var slo = {
+    const slo = {
       doBreak: false
     };
 
-    setTimeout(function(){
-        doStep(from, to, step, waitMSec, fn, slo);
+    setTimeout(()=>{
+        SliceLoop.doStep(from, to, step, waitMSec, fn, slo);
       },
       0 // 初回はすぐに実行
     );
     
     return slo;
-  };
+  }
 
-  SliceLoop.clear = function(slo){
+  static clear(slo){
     if(slo){
       slo.doBreak = true;
     }
-  };
+  }
 
-  function doStep(from, to, step, waitMSec, fn, slo){
+  static doStep(from, to, step, waitMSec, fn, slo){
     if(slo.doBreak){ return; }
 
-    var tempTo = Math.min(from + step - 1, to);
+    const tempTo = Math.min(from + step - 1, to);
 
-    for(var i=from; i<=tempTo; i++){
+    for(let i=from; i<=tempTo; i++){
       fn(i);
     }
     if(tempTo >= to){
       return;
     }
 
-    setTimeout(function(){
-      doStep(from + step, to, step, waitMSec, fn, slo);
+    setTimeout(()=>{
+      SliceLoop.doStep(from + step, to, step, waitMSec, fn, slo);
     }, waitMSec);
   }
-
-  return SliceLoop;
-})();
+}
 
 
 ////////////////////////////////
 
 
-var Table = (function(){
+class Table {
 
-  // slice loop object
-  var slo;
-
-  function text2html(s){
+  static _text2html(s){
     return s.replace(/\n/g, "<br />");
   }
 
-  function em(s){
+  static _em(s){
     return '<span class="matched">' + s + '</span>';
   }
 
-  function highlight(text, queryRegExp){
-    var result = "";
+  static _highlight(text, queryRegExp){
+    let result = "";
 
     while(true){
       if( ! text.match(queryRegExp)){
@@ -186,7 +179,7 @@ var Table = (function(){
         break;
       }
       result += RegExp.leftContext;
-      result += em(RegExp.lastMatch);
+      result += this._em(RegExp.lastMatch);
       text = RegExp.rightContext;
     }
 
@@ -195,65 +188,63 @@ var Table = (function(){
 
   ////////////////////////////////
 
-  function Table(data){
+  constructor(data){
     this.data = data;
   }
 
-  var __ = Table.prototype;
-
-  function makeInnerColsTable(tableData, queryRegExp){
-    var cols = tableData.cols;
-    var tableEl = createEl(null, "table", { "class": "inner_cols_table" });
+  static _makeInnerColsTable(tableData, queryRegExp){
+    const cols = tableData.cols;
+    const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
     var tr;
-    var html = "";
+    let html = "";
     html += $("#template_inner_cols_table_header").html();
-    var _render = _.template($("#template_inner_cols_table_row").html());
-    _(cols).each(function(col, i){
+    const _render = _.template($("#template_inner_cols_table_row").html());
+    cols.forEach((col, i)=>{
       html += _render({
         rowClass: "table_row_" + ((i % 2 === 0) ? "even" : "odd"),
         no: col.no,
-        name: highlight(col.name, queryRegExp),
-        pname: highlight(col.pname, queryRegExp),
+        name: this._highlight(col.name, queryRegExp),
+        pname: this._highlight(col.pname, queryRegExp),
         pk: col.pk,
         required: col.required ? "*" : "",
         type: col.type,
         size: col.size,
-        desc: text2html(highlight(col.desc || "", queryRegExp))
+        desc: this._text2html(this._highlight(col.desc || "", queryRegExp))
       });
     });
     tableEl.innerHTML = html;
 
     return tableEl;
-  };
+  }
 
-  function getDataByPName(pname){
-    return getData().find(function(it){
+  static _getDataByPName(pname){
+    return getData().find(it =>{
       return it.pname === pname;
     });
-  };
+  }
 
-  function fromPName(pname){
-    var tableData = getDataByPName(pname);
+  static _fromPName(pname){
+    const tableData = this._getDataByPName(pname);
     return new Table(tableData);
-  };
+  }
 
 
-  Table.fromTR = function(tr){
-    var pname = $(tr).find("input.table_pname").val();
-    return fromPName(pname);
-  };
+  static fromTR(tr){
+    const pname = $(tr).find("input.table_pname").val();
+    return this._fromPName(pname);
+  }
 
 
-  __.makeInsertSql = function(tablePName){
-    var table = this.data;
-    var sql = "insert into " + table.pname + " ( ";
-    sql += _(table.cols).map(function(col){
+  makeInsertSql(tablePName){
+    const table = this.data;
+    let sql = "insert into " + table.pname + " ( ";
+    sql += table.cols.map(col =>{
       return col.pname;
     }).join(", ");
     sql += " )\nvalues ( ";
-    sql += _(table.cols).map(function(col){
-      var s =  "/*" + col.pname + "*/";
+    sql += table.cols.map(col =>{
+      let s =  "/*" + col.pname + "*/";
       if(col.required){
         s += "NOT_NULL";
       }else{
@@ -263,13 +254,13 @@ var Table = (function(){
     }).join(", ");
     sql += " );";
     return sql;
-  };
+  }
 
-  __.makeUpdateSql = function(tablePName){
-    var table = this.data;
-    var sql = "update " + table.pname
+  makeUpdateSql(tablePName){
+    const table = this.data;
+    let sql = "update " + table.pname
         + "\nset ";
-    sql += _(table.cols).map(function(col){
+    sql += table.cols.map(col =>{
       if(col.required){
         return col.pname + " = required";
       }else{
@@ -277,60 +268,60 @@ var Table = (function(){
       }
     }).join("\n, ");
     sql += "\nwhere 1\n";
-    sql += _(table.cols).filter(function(col){
+    sql += _(table.cols).filter(col =>{
       return col.pk;
-    }).map(function(col){
-      var s =  "  and " + col.pname + " = ";
+    }).map(col =>{
+      const s =  "  and " + col.pname + " = ";
       return s;
     }).join(", ");
     sql += "\n;";
     return sql;
-  };
+  }
 
-  Table.makeTablesTable = function(_tables, query){
-    var $outer = $(createEl(null, "div"));
+  static makeTablesTable(_tables, query){
+    const $outer = $(createEl(null, "div"));
 
-    var re = new RegExp(query, "i");
+    const re = new RegExp(query, "i");
 
     // 動いているものをキャンセル
-    SliceLoop.clear(slo);
+    SliceLoop.clear(this.slo);
 
     var _row, table;
     var template = $("#table_template").html();
-    slo = SliceLoop.exec(0, _tables.length-1, 1, 10, function(ti){
+    this.slo = SliceLoop.exec(0, _tables.length-1, 1, 10, (ti)=>{
       var $tableEl = $(template);
       table = _tables[ti];
-      $tableEl.find("span.table_name").html(highlight(table.name, re));
-      $tableEl.find("span.table_pname").html(highlight(table.pname, re));
+      $tableEl.find("span.table_name").html(this._highlight(table.name, re));
+      $tableEl.find("span.table_pname").html(this._highlight(table.pname, re));
       $tableEl.find("input.table_pname").val(table.pname);
-      $tableEl.find(".table_desc").html(highlight(table.desc || "", re));
-      $tableEl.find(".table_cols").append(makeInnerColsTable(table, re));
+      $tableEl.find(".table_desc").html(this._highlight(table.desc || "", re));
+      $tableEl.find(".table_cols").append(this._makeInnerColsTable(table, re));
 
       $outer.append($tableEl);
     });
 
     return $outer.get(0);
-  };
+  }
 
-  Table.makeColsTable = function(tables, query, searchMode){
-    var re = new RegExp(query, "i");
+  static makeColsTable(tables, query, searchMode){
+    const re = new RegExp(query, "i");
 
-    var tableEl = createEl(null, "table");
+    const tableEl = createEl(null, "table");
 
-    var _tr = createEl(tableEl, "tr");
+    let _tr = createEl(tableEl, "tr");
 
     // 動いているものをキャンセル
-    SliceLoop.clear(slo);
+    SliceLoop.clear(this.slo);
 
     createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
-    var _render = _.template($("#template_cols_table_row").html());
+    const _render = _.template($("#template_cols_table_row").html());
 
     var tr, table;
-    slo = SliceLoop.exec(0, tables.length-1, 5, 10, function(ti){
+    this.slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
       table = tables[ti];
-      _(table.cols).each(function(col){
+      table.cols.forEach(col =>{
 
-        var searchTarget = [];
+        let searchTarget = [];
 
         if(searchMode === SEARCH_MODE.TABLE){
           searchTarget = [table.name, table.pname];
@@ -340,7 +331,7 @@ var Table = (function(){
           searchTarget = [table.name, table.pname, col.name, col.pname, col.desc];
         }
 
-        var matched = _(searchTarget).filter(function(it){
+        const matched = searchTarget.filter(it =>{
           return it && it.match(re);
         });
         if(matched.length === 0){
@@ -353,62 +344,59 @@ var Table = (function(){
           _tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
         }
 
-        var html = _render({
-          tableName: highlight(table.name, re),
-          tablePName: highlight(table.pname, re),
+        const html = _render({
+          tableName: this._highlight(table.name, re),
+          tablePName: this._highlight(table.pname, re),
           no: col.no,
-          name: highlight(col.name, re),
-          pname: highlight(col.pname, re),
+          name: this._highlight(col.name, re),
+          pname: this._highlight(col.pname, re),
           pk: col.pk,
           required: col.required ? "*" : "",
           type: col.type,
           size: col.size,
-          desc: text2html(highlight(col.desc || "", re))
+          desc: this._text2html(this._highlight(col.desc || "", re))
         });
         _tr.innerHTML = html;
       });
     });
     return tableEl;
-  };
+  }
+}
 
-  return Table;
-})();
+// slice loop object
+Table.slo = null;
 
 
 ////////////////////////////////
 
 
-var Popup = (function(){
+class Popup {
 
-  function Popup($el){
+  constructor($el){
     this.$el = $el;
     this.content = null;
   }
 
-  var __ = Popup.prototype;
-
-  __.show = function(){
-    var me = this;
+  show(){
+    const me = this;
     guard();
     me.$el.show();
-    me.$el.find(".close").on("click", function(){
+    me.$el.find(".close").on("click", ()=>{
       me.hide();
     });
-  };
+  }
 
-  __.hide = function(){
+  hide(){
     unguard();
     this.$el.hide();
-  };
+  }
 
-  __.setContent = function(el){
-    var $content = this.$el.find(".content");
+  setContent(el){
+    const $content = this.$el.find(".content");
     $content.empty();
     $content.append(el);
-  };
-
-  return Popup;
-})();
+  }
+}
 
 
 ////////////////////////////////
@@ -419,9 +407,9 @@ var Popup = (function(){
 function generateDummyData(){
 
   function randomStr(){
-    var len = Math.random() * 10;
-    var s = "";
-    range(0, len).each(function(){
+    const len = Math.random() * 10;
+    let s = "";
+    range(0, len).each(()=>{
       var n = parseInt(97 + Math.random() * 23, 10);
       s += String.fromCharCode(n);
     });
@@ -434,20 +422,20 @@ function generateDummyData(){
     }
   }
 
-  var _data = getData();
-  range(1, 500).each(function(tn){
-    var cols = [];
-    range(1, 10).each(function(cn, ci){
-      var col = {
+  const _data = getData();
+  range(1, 500).each(tn =>{
+    const cols = [];
+    range(1, 10).each((cn, ci)=>{
+      const col = {
         no: ci + 1,
         name: "col_" + cn + "_" + randomStr(),
         pname: "p_col_" + cn + "_" + randomStr(),
         desc: "desc_" + cn + "_" + randomStr()
       };
-      withProbability(0.2, function(){
+      withProbability(0.2, ()=>{
         col.pk = true;
       });
-      withProbability(0.2, function(){
+      withProbability(0.2, ()=>{
         col.required = true;
       });
       cols.push(col);
@@ -460,12 +448,12 @@ function generateDummyData(){
     });
   });
   
-  var manyColTable = {
+  const manyColTable = {
     name: "カラムの多いテーブル",
     pname: "many_columns",
     desc: "table desc"
   };
-  manyColTable.cols = range(1, 200).map(function(n){
+  manyColTable.cols = range(1, 200).map((n)=>{
     return {
       no: n,
       name: "lname_" + n,
@@ -479,11 +467,11 @@ function generateDummyData(){
 ////////////////////////////////
 
 
-var TableDefBrowser = (function(){
+class TableDefBrowser {
 
-  function storage(){
-    var k = arguments[0], v = arguments[1];
-    if(arguments.length >= 2){
+  static _storage(...args){
+    const k = args[0], v = args[1];
+    if(args.length >= 2){
       localStorage.setItem(k, v);
       return null;
     }else{
@@ -493,8 +481,8 @@ var TableDefBrowser = (function(){
 
   ////////////////////////////////
 
-  function TableDefBrowser(){
-    var me = this;
+  constructor(){
+    const me = this;
     me.$el = $(document.body);
     me.popup = new Popup($("#popup"));
     me.searchFunc = null;
@@ -503,31 +491,27 @@ var TableDefBrowser = (function(){
     me.timers = { search: null };
   }
 
-  var __ = TableDefBrowser.prototype;
-
-  TableDefBrowser.idleTime = 200; // msec
-
   ////////////////////////////////
 
-  function clearResult(){
+  static _clearResult(){
     $("#result").empty();
   }
 
-  function showTables(tables, query){
-    clearResult();
+  static _showTables(tables, query){
+    this._clearResult();
     $("#result").append(Table.makeTablesTable(tables, query));
   }
 
-  function showRows(tables, query, searchMode){
-    clearResult();
+  static _showRows(tables, query, searchMode){
+    this._clearResult();
     $("#result").append(Table.makeColsTable(tables, query, searchMode));
   }
 
-  function table2text(table){
-    var s = [];
+  static _table2text(table){
+    const s = [];
     s.push(table.name);
     s.push(table.pname);
-    _(table.cols).each(function(col){
+    table.cols.forEach(col =>{
       s.push(col.name);
       s.push(col.pname);
       s.push(col.desc);
@@ -535,11 +519,11 @@ var TableDefBrowser = (function(){
     return s.toString();
   }
 
-  function showResult(tables, query, searchMode, displayMode){
+  static _showResult(tables, query, searchMode, displayMode){
     if(displayMode === DISPLAY_MODE.TABLE){
-      showTables(tables, query);
+      this._showTables(tables, query);
     }else if(displayMode === DISPLAY_MODE.ROW){
-      showRows(tables, query, searchMode);
+      this._showRows(tables, query, searchMode);
     }else{
       throw new Error("unknown display mode (" + displayMode + ")");
     }
@@ -547,61 +531,61 @@ var TableDefBrowser = (function(){
 
   ////////////////////////////////
 
-  var queryMinLength = 1;
-  function searchTable(query, displayMode){
-    if(query.length < queryMinLength ){
-      clearResult();
+  static _searchTable(query, displayMode){
+    if(query.length < this.queryMinLength ){
+      this._clearResult();
       return;
     }
-    var re = new RegExp(query, "i");
-    var matched = getData().filter(function(table){
+    const re = new RegExp(query, "i");
+    const matched = getData().filter(table =>{
       return table.name.match(re) || table.pname.match(re);
     });
-    storage("query", query);
-    showResult(matched, query, SEARCH_MODE.TABLE, displayMode);
+    this._storage("query", query);
+    this._showResult(matched, query, SEARCH_MODE.TABLE, displayMode);
   }
 
-  function searchColumn(query, displayMode){
-    if(query.length < queryMinLength ){
-      clearResult();
+  static _searchColumn(query, displayMode){
+    if(query.length < this.queryMinLength ){
+      this._clearResult();
       return;
     }
-    var re = new RegExp(query, "i");
-    var matched = getData().filter(function(table){
-      var found = _(table.cols).filter(function(col, ci){
+    const re = new RegExp(query, "i");
+    const matched = getData().filter(table =>{
+      const found = _(table.cols).filter((col, ci)=>{
         return col.name.match(re) !== null
            || col.pname.match(re) !== null;
       });
       return found.length > 0;
     });
-    storage("query", query);
-    showResult(matched, query, SEARCH_MODE.COLUMN, displayMode);
+    this._storage("query", query);
+    this._showResult(matched, query, SEARCH_MODE.COLUMN, displayMode);
   }
 
-  function searchAll(query, displayMode){
-    storage("search_mode", SEARCH_MODE.ALL);
+  static _searchAll(query, displayMode){
+    this._storage("search_mode", SEARCH_MODE.ALL);
 
-    if(query.length < queryMinLength ){
-      clearResult();
+    if(query.length < this.queryMinLength ){
+      this._clearResult();
       return;
     }
-    var re = new RegExp(query, "i");
-    var matched = getData().filter(function(table){
-      return table2text(table).match(re);
+    const re = new RegExp(query, "i");
+    const matched = getData().filter(table =>{
+      return this._table2text(table).match(re);
     });
-    storage("query", query);
-    showResult(matched, query, SEARCH_MODE.ALL, displayMode);
+    this._storage("query", query);
+    this._showResult(matched, query, SEARCH_MODE.ALL, displayMode);
   }
 
   ////////////////////////////////
 
-  __.changeDisplayMode = function(mode){
-    var me = this;
+  changeDisplayMode(mode){
+    const me = this;
+    const ctor = this.constructor;
 
     // puts("changeDisplayMode " + mode);
     me.displayMode = mode;
-    var $it;
-    $("[name=display_mode]").each(function(i, it){
+    let $it;
+    $("[name=display_mode]").each((i, it)=>{
       $it = $(it);
       if($it.val() === me.displayMode){
         $it.prop("checked", true);
@@ -609,36 +593,36 @@ var TableDefBrowser = (function(){
         $it.prop("checked", false);
       }
     });
-    storage("display_mode", me.displayMode);
-  };
+    ctor._storage("display_mode", me.displayMode);
+  }
 
-  __.switchDisplayMode = function(){
-    var $notChecked = $("[name=display_mode]").not(":checked");
+  switchDisplayMode(){
+    const $notChecked = $("[name=display_mode]").not(":checked");
     this.displayMode = $notChecked.val();
     this.changeDisplayMode(this.displayMode);
-  };
+  }
 
-  __.idleTimeout = function(timerName, delay, func){
-    var me = this;
+  idleTimeout(timerName, delay, func){
+    const me = this;
 
     if(me.timers[timerName] !== null){
       // puts("cancel timeout");
       clearTimeout(me.timers[timerName]);
       me.timers[timerName] = null;
     }
-    me.timers[timerName] = setTimeout(function(){
+    me.timers[timerName] = setTimeout(()=>{
       func();
       me.timers[timerName] = null;
     }, delay);
-  };
+  }
 
-  __.showTableWindow = function(table){
-    var me = this;
+  showTableWindow(table){
+    const me = this;
     me.popup.show();
 
-    var $body = $("<div></div>")
+    const $body = $("<div></div>")
         .addClass("name_window_inner")
-        .on("click", function(ev){
+        .on("click", (ev)=>{
           if(ev.target.nodeName === "INPUT"){
             ev.target.select();
           }
@@ -647,7 +631,7 @@ var TableDefBrowser = (function(){
     $("<input />")
         .attr({ type: "button" })
         .val("SQL")
-        .on("click", function(ev){
+        .on("click", (ev)=>{
           me.popup.setContent($(
             "<textarea>" + table.makeInsertSql()
                 + "\n\n" + table.makeUpdateSql()
@@ -658,7 +642,7 @@ var TableDefBrowser = (function(){
     $body.append("<hr />");
 
     function addInput(val){
-      var $el = $("<input />").attr({type: "text"}).val(val);
+      const $el = $("<input />").attr({type: "text"}).val(val);
       $body.append($el);
       return $el;
     }
@@ -675,7 +659,7 @@ var TableDefBrowser = (function(){
 
     $body.append("<hr />");
 
-    _(table.data.cols).each(function(col){
+    table.data.cols.forEach(col =>{
       addInput(col.name);
       addInput(col.pname);
       addInput(table.data.name + "." + col.name).addClass("w12rem");
@@ -687,17 +671,18 @@ var TableDefBrowser = (function(){
 
     me.popup.setContent($body);
 
-    $("#guard_layer").on("click", function(ev){
+    $("#guard_layer").on("click", (ev)=>{
       if(ev.target.id !== "guard_layer"){
         return;
       }
       me.popup.hide();
     });
-  };
+  }
 
-  __.init = function(options){
+  init(options){
     options = options || {};
-    var me = this;
+    const me = this;
+    const ctor = this.constructor;
 
     // for debug
     if(options.debug){
@@ -705,57 +690,57 @@ var TableDefBrowser = (function(){
     }
 
     function onQueryInput(me, sel, searchFunc){
-      $(sel).on("input", function(ev){
-        me.idleTimeout("search", TableDefBrowser.idleTime, function(){
+      $(sel).on("input", (ev)=>{
+        me.idleTimeout("search", TableDefBrowser.idleTime, ()=>{
           me.searchFunc = searchFunc;
           me.query = ev.target.value;
           me.searchFunc(me.query, me.displayMode);
         });
       });
     }
-    onQueryInput(me, "#q_table", searchTable);
-    onQueryInput(me, "#q_col", searchColumn);
-    onQueryInput(me, "#q_all", searchAll);
+    onQueryInput(me, "#q_table", ctor._searchTable.bind(ctor));
+    onQueryInput(me, "#q_col", ctor._searchColumn.bind(ctor));
+    onQueryInput(me, "#q_all", ctor._searchAll.bind(ctor));
 
-    $("#q_table").on("focus", function(ev){
-      storage("search_mode", SEARCH_MODE.TABLE);
+    $("#q_table").on("focus", (ev)=>{
+      ctor._storage("search_mode", SEARCH_MODE.TABLE);
     });
-    $("#q_col").on("focus", function(ev){
-      storage("search_mode", SEARCH_MODE.COLUMN);
+    $("#q_col").on("focus", (ev)=>{
+      ctor._storage("search_mode", SEARCH_MODE.COLUMN);
     });
-    $("#q_all").on("focus", function(ev){
-      storage("search_mode", SEARCH_MODE.ALL);
+    $("#q_all").on("focus", (ev)=>{
+      ctor._storage("search_mode", SEARCH_MODE.ALL);
     });
 
-    $("#display_mode").on("change", function(ev){
+    $("#display_mode").on("change", (ev)=>{
       me.displayMode = ev.target.value;
-      storage("display_mode", me.displayMode);
+      ctor._storage("display_mode", me.displayMode);
       me.searchFunc(me.query, me.displayMode);
     });
 
-    $("[name=display_mode]").each(function(it){
+    $("[name=display_mode]").each(it =>{
       if(it.checked){
         me.displayMode = it.value;
       }
     });
 
     // popup
-    $("#result").on("click", function(ev){
+    $("#result").on("click", (ev)=>{
       if( ! $(ev.target).hasClass("btn_table_window")){
         return;
       }
 
-      var table = Table.fromTR($(ev.target).closest("tr"));
+      const table = Table.fromTR($(ev.target).closest("tr"));
 
       me.showTableWindow(table);
     });
 
-    me.$el.on("keydown", function(ev){
+    me.$el.on("keydown", (ev)=>{
       if(ev.altKey){
         switch(ev.keyCode){
         case 78: // N
           var saerchMode = $("[name=_search_mode]").val();
-          var _searchMode;
+          let _searchMode;
           switch(searchMode){
           case SEARCH_MODE.TABLE:
             _searchMode = SEARCH_MODE.COLUMN;
@@ -786,42 +771,43 @@ var TableDefBrowser = (function(){
     });
 
     // restore cond and display
-    (function(){
-      var searchMode = storage("search_mode");
+    (()=>{
+      const searchMode = ctor._storage("search_mode");
       if( ! searchMode){
         searchMode = SEARCH_MODE.TABLE;
       }
       $("#q_" + searchMode).focus();
 
-      me.displayMode = storage("display_mode");
+      me.displayMode = ctor._storage("display_mode");
       if( ! me.displayMode){
         me.displayMode = DISPLAY_MODE.TABLE;
       }
       me.changeDisplayMode(me.displayMode);
 
-      me.query = storage("query");
-      $("#q_" + searchMode).val(storage("query"));
+      me.query = ctor._storage("query");
+      $("#q_" + searchMode).val(ctor._storage("query"));
 
-      var funcmap = {
-        "table": searchTable,
-        "col": searchColumn,
-        "all": searchAll
+      const funcmap = {
+        "table": ctor._searchTable.bind(ctor),
+        "col": ctor._searchColumn.bind(ctor),
+        "all": ctor._searchAll.bind(ctor)
       };
 
-      me.searchFunc = funcmap[searchMode];
-      me.searchFunc(me.query, me.displayMode);
+      this.searchFunc = funcmap[searchMode];
+      this.searchFunc(me.query, me.displayMode);
     })();
-  };
+  }
+}
 
-  return TableDefBrowser;
-})();
+TableDefBrowser.idleTime = 200; // msec
+TableDefBrowser.queryMinLength = 1;
 
 
 ////////////////////////////////
 
 
-$(function(){
-  var tdb = new TableDefBrowser();
+$(()=>{
+  const tdb = new TableDefBrowser();
   tdb.init({
     debug: /\?debug=1$/.test(location.href)
   });
