@@ -806,7 +806,7 @@ TableDefBrowser.queryMinLength = 1;
 ////////////////////////////////
 
 
-$(function(){
+$(()=>{
   const tdb = new TableDefBrowser();
   tdb.init({
     debug: /\?debug=1$/.test(location.href)
