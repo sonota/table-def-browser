@@ -25,7 +25,7 @@ function getCodeDef(key){
 function expandCodeDef(desc){
   const _desc = normalizeText(desc);
 
-  return _(_desc.split("\n")).map(line =>{
+  return _desc.split("\n").map(line =>{
     if( line.match( /^{code:(.+)}$/ ) ){
       return getCodeDef(RegExp.$1);
     }else{
@@ -239,11 +239,11 @@ class Table {
   makeInsertSql(tablePName){
     const table = this.data;
     let sql = "insert into " + table.pname + " ( ";
-    sql += _(table.cols).map(col =>{
+    sql += table.cols.map(col =>{
       return col.pname;
     }).join(", ");
     sql += " )\nvalues ( ";
-    sql += _(table.cols).map(col =>{
+    sql += table.cols.map(col =>{
       let s =  "/*" + col.pname + "*/";
       if(col.required){
         s += "NOT_NULL";
@@ -260,7 +260,7 @@ class Table {
     const table = this.data;
     let sql = "update " + table.pname
         + "\nset ";
-    sql += _(table.cols).map(col =>{
+    sql += table.cols.map(col =>{
       if(col.required){
         return col.pname + " = required";
       }else{
