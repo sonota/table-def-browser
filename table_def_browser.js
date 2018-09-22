@@ -2,7 +2,7 @@
  * pname: physical name
  */
 
-var _data;
+let _data;
 
 /**
  * @param [String or Array] val
@@ -167,7 +167,7 @@ class Table {
   }
 
   static _highlight(text, queryRegExp){
-    var result = "";
+    let result = "";
 
     while(true){
       if( ! text.match(queryRegExp)){
@@ -197,7 +197,7 @@ class Table {
     const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
     var tr;
-    var html = "";
+    let html = "";
     html += $("#template_inner_cols_table_header").html();
     const _render = _.template($("#template_inner_cols_table_row").html());
     _(cols).each((col, i)=>{
@@ -238,13 +238,13 @@ class Table {
 
   makeInsertSql(tablePName){
     const table = this.data;
-    var sql = "insert into " + table.pname + " ( ";
+    let sql = "insert into " + table.pname + " ( ";
     sql += _(table.cols).map(col =>{
       return col.pname;
     }).join(", ");
     sql += " )\nvalues ( ";
     sql += _(table.cols).map(col =>{
-      var s =  "/*" + col.pname + "*/";
+      let s =  "/*" + col.pname + "*/";
       if(col.required){
         s += "NOT_NULL";
       }else{
@@ -258,7 +258,7 @@ class Table {
 
   makeUpdateSql(tablePName){
     const table = this.data;
-    var sql = "update " + table.pname
+    let sql = "update " + table.pname
         + "\nset ";
     sql += _(table.cols).map(col =>{
       if(col.required){
@@ -308,7 +308,7 @@ class Table {
 
     const tableEl = createEl(null, "table");
 
-    var _tr = createEl(tableEl, "tr");
+    let _tr = createEl(tableEl, "tr");
 
     // 動いているものをキャンセル
     SliceLoop.clear(this.slo);
@@ -321,7 +321,7 @@ class Table {
       table = tables[ti];
       _(table.cols).each(col =>{
 
-        var searchTarget = [];
+        let searchTarget = [];
 
         if(searchMode === SEARCH_MODE.TABLE){
           searchTarget = [table.name, table.pname];
@@ -408,7 +408,7 @@ function generateDummyData(){
 
   function randomStr(){
     const len = Math.random() * 10;
-    var s = "";
+    let s = "";
     range(0, len).each(()=>{
       var n = parseInt(97 + Math.random() * 23, 10);
       s += String.fromCharCode(n);
@@ -584,7 +584,7 @@ class TableDefBrowser {
 
     // puts("changeDisplayMode " + mode);
     me.displayMode = mode;
-    var $it;
+    let $it;
     $("[name=display_mode]").each((i, it)=>{
       $it = $(it);
       if($it.val() === me.displayMode){
@@ -740,7 +740,7 @@ class TableDefBrowser {
         switch(ev.keyCode){
         case 78: // N
           var saerchMode = $("[name=_search_mode]").val();
-          var _searchMode;
+          let _searchMode;
           switch(searchMode){
           case SEARCH_MODE.TABLE:
             _searchMode = SEARCH_MODE.COLUMN;
