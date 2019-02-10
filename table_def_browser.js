@@ -614,6 +614,7 @@ class TableDefBrowser {
     const s = [];
     s.push(table.name);
     s.push(table.pname);
+    s.push(table.desc);
     table.cols.forEach(col =>{
       s.push(col.name);
       s.push(col.pname);
