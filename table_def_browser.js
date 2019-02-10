@@ -196,22 +196,52 @@ class Table {
     const cols = tableData.cols;
     const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
-    var tr;
     let html = "";
-    html += $("#template_inner_cols_table_header").html();
-    const _render = _.template($("#template_inner_cols_table_row").html());
+    html += TreeBuilder.build(h =>
+      h("div", {},
+        h("tr", {},
+          h("th", { "class": "col_no" }, "#"),
+          h("th", { "class": "col_name" }, "論理名"),
+          h("th", { "class": "col_pname" }, "物理名"),
+          h("th", {}, "主キー"),
+          h("th", {}, "必須"),
+          h("th", {}, "型"),
+          h("th", {}, "サイズ"),
+          h("th", {}, "備考")
+        )
+      )
+    ).innerHTML;
+
     cols.forEach((col, i)=>{
-      html += _render({
-        rowClass: "table_row_" + ((i % 2 === 0) ? "even" : "odd"),
-        no: col.no,
-        name: this._highlight(col.name, queryRegExp),
-        pname: this._highlight(col.pname, queryRegExp),
-        pk: col.pk,
-        required: col.required ? "*" : "",
-        type: col.type,
-        size: col.size,
-        desc: this._text2html(this._highlight(col.desc || "", queryRegExp))
-      });
+      const rowClass = "table_row_" + ((i % 2 === 0) ? "even" : "odd");
+
+      const el = 
+        TreeBuilder.build(h =>
+          h("div", {}, 
+            h("tr", { "class": rowClass },
+              h("td", { "class": "col_no" }, col.no),
+              h("td", { "class": "col_name" },
+                TreeBuilder.buildRawHtml(this._highlight(col.name, queryRegExp))
+              ),
+              h("td", { "class": "col_pname" },
+                TreeBuilder.buildRawHtml(this._highlight(col.pname, queryRegExp))
+              ),
+              h("td", {}, col.pk),
+              h("td", {}, col.required ? "*" : ""),
+              h("td", {}, col.type),
+              h("td", { "class": "col_size" }, col.size),
+              h("td", {},
+                TreeBuilder.buildRawHtml(
+                  this._text2html(
+                    this._highlight(col.desc || "", queryRegExp)
+                  )
+                )
+              )
+            )
+          )
+        );
+
+      html += el.innerHTML;
     });
     tableEl.innerHTML = html;
 
@@ -287,9 +317,32 @@ class Table {
     SliceLoop.clear(this.slo);
 
     var _row, table;
-    var template = $("#table_template").html();
+
+    const templateEl = TreeBuilder.build(h =>
+      h("div", {},
+        h("table", { "class": "table" },
+          h("tr", { "class": "table_row" },
+            h("td", { "class": "table_name" },
+              h("span", { "class": "table_name" }, "{name}")
+            ),
+            h("td", { "class": "table_pname" },
+              h("span", { "class": "table_pname" }, "{pname}"),
+              h("input", { "class": "table_pname", value: "{pname}" }),
+              h("br", { "class": "show_insert_sql" }),
+              h("input", { "class": "btn_table_window", value: "*", type: "button" }),
+            ),
+            h("td", { "class": "table_cols", rowspan: 2 })
+          ),
+          h("tr", {},
+            h("td", { "class": "table_desc", colspan: 2 }, "{desc}")
+          )
+        )
+      )
+    );
+
     this.slo = SliceLoop.exec(0, _tables.length-1, 1, 10, (ti)=>{
-      var $tableEl = $(template);
+      var $tableEl = $(templateEl.cloneNode(true));
+
       table = _tables[ti];
       $tableEl.find("span.table_name").html(this._highlight(table.name, re));
       $tableEl.find("span.table_pname").html(this._highlight(table.pname, re));
@@ -317,8 +370,29 @@ class Table {
     // 動いているものをキャンセル
     SliceLoop.clear(this.slo);
 
-    createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
-    const _render = _.template($("#template_cols_table_row").html());
+    const headerEl = TreeBuilder.build(h =>
+      h("tr", {},
+        h("th", { "class": "table_name" },
+          "テーブル",
+          h("br"),
+          "論理名"
+         ),
+        h("th", { "class": "table_pname" },
+          "テーブル",
+          h("br"),
+          "物理名"
+        ),
+        h("th", { "class": "col_no" }, "#"),
+        h("th", { "class": "col_name" }, "論理名"),
+        h("th", { "class": "col_pname" }, "物理名"),
+        h("th", { "class": "" }, "主キー"),
+        h("th", { "class": "" }, "必須"),
+        h("th", { "class": "" }, "型"),
+        h("th", { "class": "" }, "サイズ"),
+        h("th", { "class": "" }, "備考"),
+      )
+    ).innerHTML;
+    createEl(tableEl, "tr", null, null, headerEl);
 
     var tr, table;
     this.slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
@@ -348,18 +422,45 @@ class Table {
           _tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
         }
 
-        const html = _render({
-          tableName: this._highlight(table.name, re),
-          tablePName: this._highlight(table.pname, re),
-          no: col.no,
-          name: this._highlight(col.name, re),
-          pname: this._highlight(col.pname, re),
-          pk: col.pk,
-          required: col.required ? "*" : "",
-          type: col.type,
-          size: col.size,
-          desc: this._text2html(this._highlight(col.desc || "", re))
-        });
+        const el =
+          TreeBuilder.build(h =>
+            h("div", {},
+              h("td", { "class": "table_name" },
+                TreeBuilder.buildRawHtml(
+                  this._highlight(table.name, re)
+                )
+              ),
+              h("td", { "class": "table_pname" },
+                TreeBuilder.buildRawHtml(
+                  this._highlight(table.pname, re)
+                )
+              ),
+              h("td", { "class": "col_no" }, col.no),
+              h("td", { "class": "col_name" },
+                TreeBuilder.buildRawHtml(
+                  this._highlight(col.name, re)
+                )
+              ),
+              h("td", {},
+                TreeBuilder.buildRawHtml(
+                  this._highlight(col.pname, re)
+                )
+              ),
+              h("td", {}, col.pk),
+              h("td", {}, col.required ? "*" : ""),
+              h("td", {}, col.type),
+              h("td", { "class": "col_size" }, col.size),
+              h("td", {},
+                TreeBuilder.buildRawHtml(
+                  this._text2html(
+                    this._highlight(col.desc || "", re)
+                  )
+                )
+              )
+            )
+          );
+        const html = el.innerHTML;
+
         _tr.innerHTML = html;
       });
     });

@@ -123,6 +123,7 @@ input.w12rem { width: 12rem; }
     <script type="text/javascript" src="data_code.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore.js"></script>
+    <script type="text/javascript" src="tree_builder.js"></script>
     <script type="text/javascript" src="table_def_browser.js"></script>
   </head>
   <body>
@@ -139,26 +140,6 @@ input.w12rem { width: 12rem; }
 
 <div id="result" class="l_result"></div>
 
-<div style="display: none;">
-<div id="table_template">
-<table class="table">
-  <tr class="table_row">
-    <td class="table_name"><span class="table_name">{name}</span></td>
-    <td class="table_pname">
-      <span class="table_pname">{pname}</span>
-      <input class="table_pname" value="{pname}">
-      <br class="show_insert_sql">
-      <input class="btn_table_window" value="*" type="button">
-    </td>
-    <td rowspan="2" class="table_cols"></td>
-  </tr>
-  <tr>
-    <td class="table_desc" colspan="2">{desc}</td>
-  </tr>
-</table>
-</div>
-</div>
-
 <div id="guard_layer" style="position: fixed; left: 0; top: 0; background: rgba(0,0,0,0.3); width: 100%; height: 100%; display: none;">
 
   <div id="popup"
@@ -174,61 +155,6 @@ input.w12rem { width: 12rem; }
     <div class="content" style="border-top: solid 1px #ccc; padding: 0.5rem 0;"></div>
   </div>
 </div>
-
-
-<!-- Templates -->
-
-<script type="text/template" id="template_inner_cols_table_header">
-  <tr>
-    <th class="col_no">#</th>
-    <th class="col_name">論理名</th>
-    <th class="col_pname">物理名</th>
-    <th>主キー</th>
-    <th>必須</th>
-    <th>型</th>
-    <th>サイズ</th>
-    <th>備考</th>
-  </tr>
-</script>
-
-<script type="text/template" id="template_inner_cols_table_row">
-  <tr class="<%- rowClass %>">
-    <td class="col_no"><%- no %></td>
-    <td class="col_name"><%= name %></td>
-    <td class="col_pname"><%= pname %></td>
-    <td><%- pk %></td>
-    <td><%- required %></td>
-    <td><%- type %></td>
-    <td class="col_size"><%- size %></td>
-    <td><%= desc %></td>
-  </tr>
-</script>
-
-<script type="text/template" id="template_cols_table_header">
-    <th class="table_name">テーブル<br />論理名</th>
-    <th class="table_pname">テーブル<br />物理名</th>
-    <th class="col_no">#</th>
-    <th class="col_name">論理名</th>
-    <th class="col_pname">物理名</th>
-    <th>主キー</th>
-    <th>必須</th>
-    <th>型</th>
-    <th>サイズ</th>
-    <th>備考</th>
-</script>
-
-<script type="text/template" id="template_cols_table_row">
-    <td class="table_name"><%= tableName %></td>
-    <td class="table_pname"><%= tablePName %></td>
-    <td class="col_no"><%- no %></td>
-    <td class="col_name"><%= name %></td>
-    <td class="col_pname"><%= pname %></td>
-    <td><%- pk %></td>
-    <td><%- required %></td>
-    <td><%- type %></td>
-    <td class="col_size"><%- size %></td>
-    <td><%= desc %></td>
-</script>
 
 </body>
 </html>
