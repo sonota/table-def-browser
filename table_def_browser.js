@@ -655,11 +655,11 @@ class TableDefBrowser {
     }
     const re = new RegExp(query, "i");
     const matched = getData().filter(table =>{
-      const found = _(table.cols).filter((col, ci)=>{
+      const found = table.cols.some((col, ci)=>{
         return col.name.match(re) !== null
            || col.pname.match(re) !== null;
       });
-      return found.length > 0;
+      return found;
     });
     this._storage("query", query);
     this._showResult(matched, query, SEARCH_MODE.COLUMN, displayMode);
