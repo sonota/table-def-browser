@@ -415,10 +415,8 @@ class Table {
           searchTarget = [table.name, table.pname, col.name, col.pname, col.desc];
         }
 
-        const matched = searchTarget.filter(it =>{
-          return re.test(it)
-        });
-        if(matched.length === 0){
+        const matched = searchTarget.some(it => re.test(it));
+        if(! matched){
           return;
         }
 
