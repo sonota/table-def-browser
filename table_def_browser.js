@@ -196,22 +196,39 @@ class Table {
     const cols = tableData.cols;
     const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
-    var tr;
     let html = "";
     html += $("#template_inner_cols_table_header").html();
-    const _render = _.template($("#template_inner_cols_table_row").html());
+
     cols.forEach((col, i)=>{
-      html += _render({
-        rowClass: "table_row_" + ((i % 2 === 0) ? "even" : "odd"),
-        no: col.no,
-        name: this._highlight(col.name, queryRegExp),
-        pname: this._highlight(col.pname, queryRegExp),
-        pk: col.pk,
-        required: col.required ? "*" : "",
-        type: col.type,
-        size: col.size,
-        desc: this._text2html(this._highlight(col.desc || "", queryRegExp))
-      });
+      const rowClass = "table_row_" + ((i % 2 === 0) ? "even" : "odd");
+
+      const el = 
+        TreeBuilder.build(h =>
+          h("div", {}, 
+            h("tr", { "class": rowClass },
+              h("td", { "class": "col_no" }, col.no),
+              h("td", { "class": "col_name" },
+                TreeBuilder.buildRawHtml(this._highlight(col.name, queryRegExp))
+              ),
+              h("td", { "class": "col_pname" },
+                TreeBuilder.buildRawHtml(this._highlight(col.pname, queryRegExp))
+              ),
+              h("td", {}, col.pk),
+              h("td", {}, col.required ? "*" : ""),
+              h("td", {}, col.type),
+              h("td", { "class": "col_size" }, col.size),
+              h("td", {},
+                TreeBuilder.buildRawHtml(
+                  this._text2html(
+                    this._highlight(col.desc || "", queryRegExp)
+                  )
+                )
+              )
+            )
+          )
+        );
+
+      html += el.innerHTML;
     });
     tableEl.innerHTML = html;
 
