@@ -197,7 +197,20 @@ class Table {
     const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
     let html = "";
-    html += $("#template_inner_cols_table_header").html();
+    html += TreeBuilder.build(h =>
+      h("div", {},
+        h("tr", {},
+          h("th", { "class": "col_no" }, "#"),
+          h("th", { "class": "col_name" }, "論理名"),
+          h("th", { "class": "col_pname" }, "物理名"),
+          h("th", {}, "主キー"),
+          h("th", {}, "必須"),
+          h("th", {}, "型"),
+          h("th", {}, "サイズ"),
+          h("th", {}, "備考")
+        )
+      )
+    ).innerHTML;
 
     cols.forEach((col, i)=>{
       const rowClass = "table_row_" + ((i % 2 === 0) ? "even" : "odd");
