@@ -416,7 +416,7 @@ class Table {
         }
 
         const matched = searchTarget.filter(it =>{
-          return it && it.match(re);
+          return re.test(it)
         });
         if(matched.length === 0){
           return;
