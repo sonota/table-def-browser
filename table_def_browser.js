@@ -656,8 +656,8 @@ class TableDefBrowser {
     const re = new RegExp(query, "i");
     const matched = getData().filter(table =>{
       const found = table.cols.some((col, ci)=>{
-        return col.name.match(re) !== null
-           || col.pname.match(re) !== null;
+        return re.test(col.name)
+           || re.test(col.pname);
       });
       return found;
     });
