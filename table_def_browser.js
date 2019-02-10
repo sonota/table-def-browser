@@ -229,24 +229,24 @@ class Table {
 
       rowEls.push(
         TreeBuilder.build(h =>
-            h("tr", { "class": rowClass },
-              h("td", { "class": "col_no" }, col.no),
-              h("td", { "class": "col_name" },
-                TreeBuilder.buildRawHtml(this._highlight(col.name, queryRegExp))
-              ),
-              h("td", { "class": "col_pname" },
-                TreeBuilder.buildRawHtml(this._highlight(col.pname, queryRegExp))
-              ),
-              h("td", {}, col.pk),
-              h("td", {}, col.required ? "*" : ""),
-              h("td", {}, col.type),
-              h("td", { "class": "col_size" }, col.size),
-              h("td", {},
-                TreeBuilder.buildRawHtml(
-                  this._text2html(col.desc, queryRegExp)
-                )
+          h("tr", { "class": rowClass },
+            h("td", { "class": "col_no" }, col.no),
+            h("td", { "class": "col_name" },
+              TreeBuilder.buildRawHtml(this._highlight(col.name, queryRegExp))
+            ),
+            h("td", { "class": "col_pname" },
+              TreeBuilder.buildRawHtml(this._highlight(col.pname, queryRegExp))
+            ),
+            h("td", {}, col.pk),
+            h("td", {}, col.required ? "*" : ""),
+            h("td", {}, col.type),
+            h("td", { "class": "col_size" }, col.size),
+            h("td", {},
+              TreeBuilder.buildRawHtml(
+                this._text2html(col.desc, queryRegExp)
               )
             )
+          )
         )
       )
     });
