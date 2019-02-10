@@ -207,9 +207,10 @@ class Table {
   static _makeInnerColsTable(tableData, queryRegExp){
     const cols = tableData.cols;
 
-    let html = "";
-    html += TreeBuilder.build(h =>
-      h("div", {},
+    const rowEls = [];
+
+    rowEls.push(
+      TreeBuilder.build(h =>
         h("tr", {},
           h("th", { "class": "col_no" }, "#"),
           h("th", { "class": "col_name" }, "論理名"),
@@ -221,14 +222,13 @@ class Table {
           h("th", {}, "備考")
         )
       )
-    ).innerHTML;
+    );
 
     cols.forEach((col, i)=>{
       const rowClass = "table_row_" + ((i % 2 === 0) ? "even" : "odd");
 
-      const el = 
+      rowEls.push(
         TreeBuilder.build(h =>
-          h("div", {}, 
             h("tr", { "class": rowClass },
               h("td", { "class": "col_no" }, col.no),
               h("td", { "class": "col_name" },
@@ -247,16 +247,15 @@ class Table {
                 )
               )
             )
-          )
-        );
-
-      html += el.innerHTML;
+        )
+      )
     });
 
-    const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
-    tableEl.innerHTML = html;
-
-    return tableEl;
+    return TreeBuilder.build(h =>
+      h("table", { "class": "inner_cols_table" },
+        rowEls
+      )
+    );
   }
 
   static _getDataByPName(pname){
