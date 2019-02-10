@@ -206,7 +206,6 @@ class Table {
 
   static _makeInnerColsTable(tableData, queryRegExp){
     const cols = tableData.cols;
-    const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
 
     let html = "";
     html += TreeBuilder.build(h =>
@@ -253,6 +252,8 @@ class Table {
 
       html += el.innerHTML;
     });
+
+    const tableEl = createEl(null, "table", { "class": "inner_cols_table" });
     tableEl.innerHTML = html;
 
     return tableEl;
