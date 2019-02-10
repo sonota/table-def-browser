@@ -159,6 +159,10 @@ class SliceLoop {
 class Table {
 
   static _text2html(s, queryRegExp){
+    if (s == null) {
+      return "";
+    }
+
     const lines = s.split("\n");
     return lines.map(line => {
       if (/^https?:\/\/.+/.test(line)) {
@@ -240,7 +244,7 @@ class Table {
               h("td", { "class": "col_size" }, col.size),
               h("td", {},
                 TreeBuilder.buildRawHtml(
-                  this._text2html(col.desc || "", queryRegExp)
+                  this._text2html(col.desc, queryRegExp)
                 )
               )
             )
@@ -354,7 +358,7 @@ class Table {
       $tableEl.find("span.table_pname").html(this._highlight(table.pname, re));
       $tableEl.find("input.table_pname").val(table.pname);
       $tableEl.find(".table_desc").html(
-        this._text2html(table.desc || "", re)
+        this._text2html(table.desc, re)
       );
       $tableEl.find(".table_cols").append(this._makeInnerColsTable(table, re));
 
@@ -456,7 +460,7 @@ class Table {
               h("td", { "class": "col_size" }, col.size),
               h("td", {},
                 TreeBuilder.buildRawHtml(
-                  this._text2html(col.desc || "", re)
+                  this._text2html(col.desc, re)
                 )
               )
             )
