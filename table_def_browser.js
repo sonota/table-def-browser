@@ -335,7 +335,6 @@ class Table {
     SliceLoop.clear(this.slo);
 
     createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
-    const _render = _.template($("#template_cols_table_row").html());
 
     var tr, table;
     this.slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
@@ -365,18 +364,45 @@ class Table {
           _tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
         }
 
-        const html = _render({
-          tableName: this._highlight(table.name, re),
-          tablePName: this._highlight(table.pname, re),
-          no: col.no,
-          name: this._highlight(col.name, re),
-          pname: this._highlight(col.pname, re),
-          pk: col.pk,
-          required: col.required ? "*" : "",
-          type: col.type,
-          size: col.size,
-          desc: this._text2html(this._highlight(col.desc || "", re))
-        });
+        const el =
+          TreeBuilder.build(h =>
+            h("div", {},
+              h("td", { "class": "table_name" },
+                TreeBuilder.buildRawHtml(
+                  this._highlight(table.name, re)
+                )
+              ),
+              h("td", { "class": "table_pname" },
+                TreeBuilder.buildRawHtml(
+                  this._highlight(table.pname, re)
+                )
+              ),
+              h("td", { "class": "col_no" }, col.no),
+              h("td", { "class": "col_name" },
+                TreeBuilder.buildRawHtml(
+                  this._highlight(col.name, re)
+                )
+              ),
+              h("td", {},
+                TreeBuilder.buildRawHtml(
+                  this._highlight(col.pname, re)
+                )
+              ),
+              h("td", {}, col.pk),
+              h("td", {}, col.required ? "*" : ""),
+              h("td", {}, col.type),
+              h("td", { "class": "col_size" }, col.size),
+              h("td", {},
+                TreeBuilder.buildRawHtml(
+                  this._text2html(
+                    this._highlight(col.desc || "", re)
+                  )
+                )
+              )
+            )
+          );
+        const html = el.innerHTML;
+
         _tr.innerHTML = html;
       });
     });
