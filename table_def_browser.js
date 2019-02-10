@@ -370,7 +370,29 @@ class Table {
     // 動いているものをキャンセル
     SliceLoop.clear(this.slo);
 
-    createEl(tableEl, "tr", null, null, $("#template_cols_table_header").html());
+    const headerEl = TreeBuilder.build(h =>
+      h("tr", {},
+        h("th", { "class": "table_name" },
+          "テーブル",
+          h("br"),
+          "論理名"
+         ),
+        h("th", { "class": "table_pname" },
+          "テーブル",
+          h("br"),
+          "物理名"
+        ),
+        h("th", { "class": "col_no" }, "#"),
+        h("th", { "class": "col_name" }, "論理名"),
+        h("th", { "class": "col_pname" }, "物理名"),
+        h("th", { "class": "" }, "主キー"),
+        h("th", { "class": "" }, "必須"),
+        h("th", { "class": "" }, "型"),
+        h("th", { "class": "" }, "サイズ"),
+        h("th", { "class": "" }, "備考"),
+      )
+    ).innerHTML;
+    createEl(tableEl, "tr", null, null, headerEl);
 
     var tr, table;
     this.slo = SliceLoop.exec(0, tables.length-1, 5, 10, (ti)=>{
