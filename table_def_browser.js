@@ -304,9 +304,32 @@ class Table {
     SliceLoop.clear(this.slo);
 
     var _row, table;
-    var template = $("#table_template").html();
+
+    const templateEl = TreeBuilder.build(h =>
+      h("div", {},
+        h("table", { "class": "table" },
+          h("tr", { "class": "table_row" },
+            h("td", { "class": "table_name" },
+              h("span", { "class": "table_name" }, "{name}")
+            ),
+            h("td", { "class": "table_pname" },
+              h("span", { "class": "table_pname" }, "{pname}"),
+              h("input", { "class": "table_pname", value: "{pname}" }),
+              h("br", { "class": "show_insert_sql" }),
+              h("input", { "class": "btn_table_window", value: "*", type: "button" }),
+            ),
+            h("td", { "class": "table_cols", rowspan: 2 })
+          ),
+          h("tr", {},
+            h("td", { "class": "table_desc", colspan: 2 }, "{desc}")
+          )
+        )
+      )
+    );
+
     this.slo = SliceLoop.exec(0, _tables.length-1, 1, 10, (ti)=>{
-      var $tableEl = $(template);
+      var $tableEl = $(templateEl.cloneNode(true));
+
       table = _tables[ti];
       $tableEl.find("span.table_name").html(this._highlight(table.name, re));
       $tableEl.find("span.table_pname").html(this._highlight(table.pname, re));
