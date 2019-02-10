@@ -917,7 +917,7 @@ TableDefBrowser.queryMinLength = 1;
 ////////////////////////////////
 
 
-$(()=>{
+document.addEventListener("DOMContentLoaded", ()=>{
   const tdb = new TableDefBrowser();
   tdb.init({
     debug: /\?debug=1$/.test(location.href)
