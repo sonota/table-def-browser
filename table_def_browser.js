@@ -294,7 +294,11 @@ class Table {
       $tableEl.find("span.table_name").html(this._highlight(table.name, re));
       $tableEl.find("span.table_pname").html(this._highlight(table.pname, re));
       $tableEl.find("input.table_pname").val(table.pname);
-      $tableEl.find(".table_desc").html(this._highlight(table.desc || "", re));
+      $tableEl.find(".table_desc").html(
+        this._text2html(
+          this._highlight(table.desc || "", re)
+        )
+      );
       $tableEl.find(".table_cols").append(this._makeInnerColsTable(table, re));
 
       $outer.append($tableEl);
