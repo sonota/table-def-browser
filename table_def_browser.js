@@ -683,21 +683,20 @@ class TableDefBrowser {
   ////////////////////////////////
 
   changeDisplayMode(mode){
-    const me = this;
     const ctor = this.constructor;
 
     // puts("changeDisplayMode " + mode);
-    me.displayMode = mode;
+    this.displayMode = mode;
     let $it;
     $("[name=display_mode]").each((i, it)=>{
       $it = $(it);
-      if($it.val() === me.displayMode){
+      if($it.val() === this.displayMode){
         $it.prop("checked", true);
       }else{
         $it.prop("checked", false);
       }
     });
-    ctor._storage("display_mode", me.displayMode);
+    ctor._storage("display_mode", this.displayMode);
   }
 
   switchDisplayMode(){
