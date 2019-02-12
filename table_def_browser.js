@@ -687,9 +687,8 @@ class TableDefBrowser {
 
     // puts("changeDisplayMode " + mode);
     this.displayMode = mode;
-    let $it;
     $("[name=display_mode]").each((i, it)=>{
-      $it = $(it);
+      const $it = $(it);
       if($it.val() === this.displayMode){
         $it.prop("checked", true);
       }else{
