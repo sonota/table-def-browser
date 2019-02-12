@@ -705,16 +705,14 @@ class TableDefBrowser {
   }
 
   idleTimeout(timerName, delay, func){
-    const me = this;
-
-    if(me.timers[timerName] !== null){
+    if(this.timers[timerName] !== null){
       // puts("cancel timeout");
-      clearTimeout(me.timers[timerName]);
-      me.timers[timerName] = null;
+      clearTimeout(this.timers[timerName]);
+      this.timers[timerName] = null;
     }
-    me.timers[timerName] = setTimeout(()=>{
+    this.timers[timerName] = setTimeout(()=>{
       func();
-      me.timers[timerName] = null;
+      this.timers[timerName] = null;
     }, delay);
   }
 
