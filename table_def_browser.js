@@ -225,9 +225,11 @@ class Table {
     );
 
     cols.forEach((col, i)=>{
+      const rowClass = "table_row_" + ((i % 2 === 0) ? "even" : "odd");
+
       rowEls.push(
         TreeBuilder.build(h =>
-          h("tr", { "class": "stripe" },
+          h("tr", { "class": rowClass },
             h("td", { "class": "col_no" }, col.no),
             h("td", { "class": "col_name" },
               TreeBuilder.buildRawHtml(this._highlight(col.name, queryRegExp))
@@ -420,7 +422,11 @@ class Table {
           return;
         }
 
-        _tr = createEl(tableEl, "tr", { "class": "stripe" });
+        if(ti % 2 === 0){
+          _tr = createEl(tableEl, "tr", { "class": "table_row_even" });
+        }else{
+          _tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
+        }
 
         const el =
           TreeBuilder.build(h =>
