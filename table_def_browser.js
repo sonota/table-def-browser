@@ -237,7 +237,7 @@ class Table {
             h("td", { "class": "col_pname" },
               TreeBuilder.buildRawHtml(this._highlight(col.pname, queryRegExp))
             ),
-            h("td", {}, col.pk),
+            h("td", {}, col.pk ? "*" : ""),
             h("td", {}, col.required ? "*" : ""),
             h("td", {}, col.type),
             h("td", { "class": "col_size" }, col.size),
