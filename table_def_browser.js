@@ -166,8 +166,8 @@ class Table {
     const lines = s.split("\n");
     return lines.map(line => {
       if (/^https?:\/\/.+/.test(line)) {
-        const inner = this._highlight(line, queryRegExp);
-        return `<a href="${line}">${inner}</a>`;
+        const content = this._highlight(line, queryRegExp);
+        return `<a href="${line}">${content}</a>`;
       } else {
         return this._highlight(line, queryRegExp);
       }
