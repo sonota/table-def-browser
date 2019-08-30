@@ -168,6 +168,10 @@ class Table {
       if (/^https?:\/\/.+/.test(line)) {
         const content = this._highlight(line, queryRegExp);
         return `<a href="${line}">${content}</a>`;
+      } else if (/^link: (.+)/.test(line)) {
+        const href = RegExp.$1;
+        const content = this._highlight(href, queryRegExp);
+        return `<a href="${href}">${content}</a>`;
       } else {
         return this._highlight(line, queryRegExp);
       }
