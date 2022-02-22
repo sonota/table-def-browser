@@ -8,7 +8,7 @@ let _data;
  * @param [String or Array] val
  */
 function normalizeText(val){
-  if(val == null){
+  if (val == null) {
     return "";
   }else if(typeof val === "string"){
     return val;
@@ -129,7 +129,7 @@ class SliceLoop {
   }
 
   static clear(slo){
-    if(slo){
+    if (slo) {
       slo.doBreak = true;
     }
   }
@@ -289,7 +289,7 @@ class Table {
     sql += " )\nvalues ( ";
     sql += table.cols.map(col =>{
       let s =  "/*" + col.pname + "*/";
-      if(col.required){
+      if (col.required) {
         s += "NOT_NULL";
       }else{
         s += "NULL";
@@ -305,7 +305,7 @@ class Table {
     let sql = "update " + table.pname
         + "\nset ";
     sql += table.cols.map(col =>{
-      if(col.required){
+      if (col.required) {
         return col.pname + " = required";
       }else{
         return col.pname + " = null";
@@ -413,7 +413,7 @@ class Table {
 
         let searchTarget = [];
 
-        if(searchMode === SEARCH_MODE.TABLE){
+        if (searchMode === SEARCH_MODE.TABLE) {
           searchTarget = [table.name, table.pname];
         }else if(searchMode === SEARCH_MODE.COLUMN){
           searchTarget = [col.name, col.pname];
@@ -530,7 +530,7 @@ function generateDummyData(){
   }
 
   function withProbability(p, func){
-    if(Math.random() < p){
+    if (Math.random() < p) {
       func();
     }
   }
@@ -634,7 +634,7 @@ class TableDefBrowser {
   }
 
   static _showResult(tables, query, searchMode, displayMode){
-    if(displayMode === DISPLAY_MODE.TABLE){
+    if (displayMode === DISPLAY_MODE.TABLE) {
       this._showTables(tables, query);
     }else if(displayMode === DISPLAY_MODE.ROW){
       this._showRows(tables, query, searchMode);
@@ -715,7 +715,7 @@ class TableDefBrowser {
   }
 
   idleTimeout(timerName, delay, func){
-    if(this.timers[timerName] !== null){
+    if (this.timers[timerName] !== null) {
       // puts("cancel timeout");
       clearTimeout(this.timers[timerName]);
       this.timers[timerName] = null;
@@ -829,7 +829,7 @@ class TableDefBrowser {
     });
 
     $("[name=display_mode]").each(it =>{
-      if(it.checked){
+      if (it.checked) {
         me.displayMode = it.value;
       }
     });
