@@ -847,11 +847,11 @@ class TableDefBrowser {
 
     me.$el.on("keydown", (ev)=>{
       if(ev.altKey){
-        switch(ev.keyCode){
+        switch (ev.keyCode) {
         case 78: // N
           var saerchMode = $("[name=_search_mode]").val();
           let _searchMode;
-          switch(searchMode){
+          switch (searchMode) {
           case SEARCH_MODE.TABLE:
             _searchMode = SEARCH_MODE.COLUMN;
             break;
