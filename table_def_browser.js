@@ -882,7 +882,7 @@ class TableDefBrowser {
 
     // restore cond and display
     (()=>{
-      const searchMode = ctor._storage("search_mode");
+      let searchMode = ctor._storage("search_mode");
       if( ! searchMode){
         searchMode = SEARCH_MODE.TABLE;
       }
