@@ -80,12 +80,12 @@ function createEl(parent, tagName, attrs, styles, innerHTML){
   const el = document.createElement(tagName);
 
   if(attrs){
-    for(let key of Object.keys(attrs)){
+    for (let key of Object.keys(attrs)) {
       el.setAttribute(key, attrs[key]);
     }
   }
   if(styles){
-    for(let key of Object.keys(styles)){
+    for (let key of Object.keys(styles)) {
       el.style[key] = styles[key];
     }
   }
@@ -139,7 +139,7 @@ class SliceLoop {
 
     const tempTo = Math.min(from + step - 1, to);
 
-    for(let i=from; i<=tempTo; i++){
+    for (let i=from; i<=tempTo; i++) {
       fn(i);
     }
     if(tempTo >= to){
