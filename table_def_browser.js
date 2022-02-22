@@ -7,7 +7,7 @@ let _data;
 /**
  * @param [String or Array] val
  */
-function normalizeText(val){
+function normalizeText(val) {
   if (val == null) {
     return "";
   }else if(typeof val === "string"){
@@ -99,7 +99,7 @@ function createEl(parent, tagName, attrs, styles, innerHTML){
   return el;
 };
 
-function guard(){
+function guard() {
   $("#guard_layer").show();
 }
 function unguard(){
@@ -204,7 +204,7 @@ class Table {
 
   ////////////////////////////////
 
-  constructor(data){
+  constructor(data) {
     this.data = data;
   }
 
@@ -322,7 +322,7 @@ class Table {
     return sql;
   }
 
-  static makeTablesTable(_tables, query){
+  static makeTablesTable(_tables, query) {
     const $outer = $(createEl(null, "div"));
 
     const re = new RegExp(query, "i");
@@ -485,7 +485,7 @@ Table.slo = null;
 
 class Popup {
 
-  constructor($el){
+  constructor($el) {
     this.$el = $el;
     this.content = null;
   }
@@ -504,7 +504,7 @@ class Popup {
     this.$el.hide();
   }
 
-  setContent(el){
+  setContent(el) {
     const $content = this.$el.find(".content");
     $content.empty();
     $content.append(el);
@@ -606,7 +606,7 @@ class TableDefBrowser {
 
   ////////////////////////////////
 
-  static _clearResult(){
+  static _clearResult() {
     $("#result").empty();
   }
 
@@ -708,7 +708,7 @@ class TableDefBrowser {
     ctor._storage("display_mode", this.displayMode);
   }
 
-  switchDisplayMode(){
+  switchDisplayMode() {
     const $notChecked = $("[name=display_mode]").not(":checked");
     this.displayMode = $notChecked.val();
     this.changeDisplayMode(this.displayMode);
