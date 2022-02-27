@@ -12,7 +12,7 @@ function normalizeText(val) {
     return "";
   }else if(typeof val === "string"){
     return val;
-  }else{
+  } else {
     // array
     return val.join("\n");
   }
@@ -291,7 +291,7 @@ class Table {
       let s =  "/*" + col.pname + "*/";
       if (col.required) {
         s += "NOT_NULL";
-      }else{
+      } else {
         s += "NULL";
       }
       return s;
@@ -307,7 +307,7 @@ class Table {
     sql += table.cols.map(col =>{
       if (col.required) {
         return col.pname + " = required";
-      }else{
+      } else {
         return col.pname + " = null";
       }
     }).join("\n, ");
@@ -428,7 +428,7 @@ class Table {
 
         if(ti % 2 === 0){
           _tr = createEl(tableEl, "tr", { "class": "table_row_even" });
-        }else{
+        } else {
           _tr = createEl(tableEl, "tr", { "class": "table_row_odd" });
         }
 
@@ -587,7 +587,7 @@ class TableDefBrowser {
     if(args.length >= 2){
       localStorage.setItem(k, v);
       return null;
-    }else{
+    } else {
       return localStorage.getItem(k);
     }
   }
@@ -638,7 +638,7 @@ class TableDefBrowser {
       this._showTables(tables, query);
     }else if(displayMode === DISPLAY_MODE.ROW){
       this._showRows(tables, query, searchMode);
-    }else{
+    } else {
       throw new Error("unknown display mode (" + displayMode + ")");
     }
   }
@@ -701,7 +701,7 @@ class TableDefBrowser {
       const $it = $(it);
       if($it.val() === this.displayMode){
         $it.prop("checked", true);
-      }else{
+      } else {
         $it.prop("checked", false);
       }
     });
