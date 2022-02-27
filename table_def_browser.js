@@ -185,7 +185,7 @@ class Table {
   static _highlight(text, queryRegExp){
     let result = "";
 
-    while(true){
+    while (true) {
       if( ! text.match(queryRegExp)){
         result += text;
         break;
