@@ -10,7 +10,7 @@ let _data;
 function normalizeText(val) {
   if (val == null) {
     return "";
-  }else if(typeof val === "string"){
+  } else if (typeof val === "string") {
     return val;
   } else {
     // array
@@ -415,9 +415,9 @@ class Table {
 
         if (searchMode === SEARCH_MODE.TABLE) {
           searchTarget = [table.name, table.pname];
-        }else if(searchMode === SEARCH_MODE.COLUMN){
+        } else if (searchMode === SEARCH_MODE.COLUMN) {
           searchTarget = [col.name, col.pname];
-        }else if(searchMode === SEARCH_MODE.ALL){
+        } else if (searchMode === SEARCH_MODE.ALL) {
           searchTarget = [table.name, table.pname, col.name, col.pname, col.desc];
         }
 
@@ -636,7 +636,7 @@ class TableDefBrowser {
   static _showResult(tables, query, searchMode, displayMode){
     if (displayMode === DISPLAY_MODE.TABLE) {
       this._showTables(tables, query);
-    }else if(displayMode === DISPLAY_MODE.ROW){
+    } else if (displayMode === DISPLAY_MODE.ROW) {
       this._showRows(tables, query, searchMode);
     } else {
       throw new Error("unknown display mode (" + displayMode + ")");
